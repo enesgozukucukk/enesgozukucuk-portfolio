@@ -178,13 +178,6 @@ export default function Home() {
           display: flex; align-items: flex-end;
           justify-content: space-between; margin-bottom: 3rem;
         }
-        .work-link {
-          font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
-          color: var(--gray); text-decoration: none;
-          border-bottom: 1px solid var(--light-gray); padding-bottom: 2px;
-          transition: color 0.2s, border-color 0.2s;
-        }
-        .work-link:hover { color: var(--black); border-color: var(--black); }
 
         .case-studies {
           display: grid; grid-template-columns: repeat(3, 1fr);
@@ -333,7 +326,6 @@ export default function Home() {
         }
       `}</style>
 
-      {/* NAV */}
       <nav id="nav">
         <a href="#" className="nav-logo">EG</a>
         <ul className="nav-links">
@@ -344,13 +336,13 @@ export default function Home() {
         </ul>
       </nav>
 
-      {/* HERO */}
       <section className="hero">
         <div className="hero-left">
           <div className="hero-tag">Berlin, Germany</div>
           <h1 className="hero-name">
             Enes
-            <span>Gözüküçük</span>
+            <span>Gozu-</span>
+            <span>kucuk</span>
           </h1>
           <p className="hero-role">Product Strategist & Service Designer</p>
           <p className="hero-desc">
@@ -365,18 +357,18 @@ export default function Home() {
         </div>
         <div className="hero-right">
           <Image
-            src="/enes-gozukucuk.jpg"
-            alt="Enes Gözükücük"
-            fill
-            style={{ objectFit: "cover", objectPosition: "center top", opacity: 0.88, mixBlendMode: "luminosity" }}
-            priority
-          />
+  src="/enes-gozukucuk.jpg"
+  alt="Enes Gozukucuk"
+  fill
+  sizes="420px"
+  style={{ objectFit: "cover", objectPosition: "center top", opacity: 0.88, mixBlendMode: "luminosity" }}
+  priority
+/>
           <div className="hero-accent">TH Wildau · Berlin</div>
         </div>
         <div className="hero-scroll">Scroll</div>
       </section>
 
-      {/* MARQUEE */}
       <div className="marquee-bar">
         <div className="marquee-track">
           {[
@@ -395,7 +387,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* STATS */}
       <div className="stats">
         {[
           { number: "19", label: "International Markets", sub: "Labrys Consulting" },
@@ -411,7 +402,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* WORK */}
       <section className="section" id="work" style={{ background: "var(--white)" }}>
         <div className="work-header">
           <div>
@@ -457,13 +447,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ABOUT */}
       <section className="about-strip" id="about">
         <div className="about-left">
           <div className="section-label">About</div>
           <h2 className="section-title">Business thinking,<br />user insight, built in code.</h2>
           <p className="about-body">
-            I studied Management Information Systems at Bogazici University, which gave me a foundation in systems thinking and data. Now I am finishing a Master&apos;s in European Business Management at TH Wildau, where I also work as a student assistant on a service design project for the university itself.<br /><br />
+            I studied Management Information Systems at Bogazici University, which gave me a foundation in systems thinking and data. Now I am finishing a Masters in European Business Management at TH Wildau, where I also work as a student assistant on a service design project for the university itself.<br /><br />
             Before Berlin, I worked in business development across <strong>19 international markets</strong>, ran social media growth for an edtech company, and spent time in a call centre handling hundreds of customer interactions daily. Each role taught me something different about how people make decisions and where systems break down.<br /><br />
             I write code too. TypeScript, Flutter, Firebase, Next.js. It changes how I think about design because I know what is actually buildable.
           </p>
@@ -495,12 +484,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TOOL */}
       <section className="tool-section" id="tool">
         <div className="tool-preview">
           <div className="tool-preview-inner">
             <div className="tool-preview-label">AI Persona Builder · Phase 2 of 4</div>
-            <div className="tool-preview-q">&ldquo;Describe the last time this person felt underserved by a product or service.&rdquo;</div>
+            <div className="tool-preview-q">"Describe the last time this person felt underserved by a product or service."</div>
             <div className="tool-preview-bar" />
             <div className="tool-preview-badge">Adaptive · Research-quality</div>
           </div>
@@ -516,10 +504,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer id="contact">
         <div>
-          <div className="footer-name">ENES GÖZÜKÜCÜK</div>
+          <div className="footer-name">ENES GOZUKUCUK</div>
           <div className="footer-sub">Berlin, Germany</div>
         </div>
         <div className="footer-links">
