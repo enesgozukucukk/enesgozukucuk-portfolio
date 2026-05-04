@@ -48,9 +48,9 @@ fadeEls.forEach((el) => {
         }
         nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
         .nav-logo {
-          font-family: var(--font-display); font-size: 1.5rem;
-          letter-spacing: 0.05em; color: var(--black); text-decoration: none;
-        }
+            font-family: var(--font-display); font-size: 1rem;
+            letter-spacing: 0.12em; color: var(--black); text-decoration: none;
+          }
         .nav-links { display: flex; gap: 2.5rem; list-style: none; }
         .nav-links a {
           font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase;
@@ -336,7 +336,7 @@ fadeEls.forEach((el) => {
       `}</style>
 
       <nav id="nav">
-        <a href="#" className="nav-logo">EG</a>
+        <a href="#" className="nav-logo">Enes Gozukucuk</a>
         <ul className="nav-links">
           <li><a href="#work">Work</a></li>
           <li><a href="#about">About</a></li>
@@ -369,8 +369,7 @@ fadeEls.forEach((el) => {
   alt="Enes Gozukucuk"
   fill
   sizes="420px"
-  style={{ objectFit: "cover", objectPosition: "center top", opacity: 0.88, mixBlendMode: "luminosity" }}
-  priority
+style={{ objectFit: "cover", objectPosition: "center top", opacity: 1 }}  priority
 />
           <div className="hero-accent">TH Wildau · Berlin</div>
         </div>
