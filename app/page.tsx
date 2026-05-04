@@ -341,8 +341,7 @@ export default function Home() {
           <div className="hero-tag">Berlin, Germany</div>
           <h1 className="hero-name">
             Enes
-            <span>Gozu-</span>
-            <span>kucuk</span>
+            <span>Gozukucuk</span>
           </h1>
           <p className="hero-role">Product Strategist & Service Designer</p>
           <p className="hero-desc">
