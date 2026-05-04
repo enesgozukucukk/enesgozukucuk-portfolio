@@ -11,17 +11,26 @@ export default function Home() {
 
     const fadeEls = document.querySelectorAll(".fade-up");
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("visible");
-            observer.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-    fadeEls.forEach((el) => observer.observe(el));
+  (entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        observer.unobserve(e.target);
+      }
+    });
+  },
+  { threshold: 0.05 }
+);
+
+// If element is already in view on load (e.g. after back navigation), show it immediately
+fadeEls.forEach((el) => {
+  const rect = el.getBoundingClientRect();
+  if (rect.top < window.innerHeight) {
+    (el as HTMLElement).classList.add("visible");
+  } else {
+    observer.observe(el);
+  }
+});
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
