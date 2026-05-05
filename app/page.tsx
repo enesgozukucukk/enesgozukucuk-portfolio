@@ -271,15 +271,19 @@ export default function Home() {
         }
 
         .about-strip {
-  background: #1a1a18; color: var(--white);
-  display: grid; grid-template-columns: 65fr 35fr;
-}
-        .about-left { padding: 4rem 3rem 4rem 3rem; border-right: 1px solid #2a2a28; width: 100%; }        .about-left .section-label { color: #666; }
+          background: #1a1a18; color: var(--white);
+          display: grid; grid-template-columns: 65fr 35fr;
+        }
+        .about-left {
+          padding: 4rem 3rem; border-right: 1px solid #2a2a28; width: 100%;
+        }
+        .about-left .section-label { color: #666; }
         .about-left .section-label::before { background: #666; }
         .about-left .section-title {
-          color: var(--white); font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 1.5rem;
+          color: var(--white); font-size: clamp(1.4rem, 2.5vw, 1.9rem); margin-bottom: 1.25rem;
         }
-.       about-body { font-size: 0.9rem; line-height: 1.8; color: #bbb; max-width: 100%; }        .about-body strong { color: var(--white); font-weight: 500; }
+        .about-body { font-size: 1rem; line-height: 1.85; color: #bbb; max-width: 100%; }
+        .about-body strong { color: var(--white); font-weight: 500; }
         .about-cta {
           display: inline-block; margin-top: 2rem;
           color: var(--accent); font-size: 0.75rem; letter-spacing: 0.15em;
@@ -288,10 +292,13 @@ export default function Home() {
         }
         .about-cta:hover { border-color: var(--accent); }
         .about-right { padding: 4rem 3rem; }
-        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2.5rem; }
+        .skills-grid {
+          display: grid; grid-template-columns: 1fr 1fr;
+          gap: 1.5rem; margin-bottom: 1.5rem;
+        }
         .skill-group-title {
           font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
-          color: #666; margin-bottom: 0.85rem;
+          color: #666; margin-bottom: 0.85rem; white-space: nowrap;
         }
         .skill-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
         .skill-list li {
@@ -303,7 +310,7 @@ export default function Home() {
           background: var(--accent); border-radius: 50%; flex-shrink: 0;
         }
         .lang-row {
-          padding-top: 2rem; border-top: 1px solid #2a2a28;
+          padding-top: 1.5rem; border-top: 1px solid #2a2a28;
           display: flex; gap: 2rem;
         }
         .lang-item { display: flex; flex-direction: column; gap: 0.25rem; }
