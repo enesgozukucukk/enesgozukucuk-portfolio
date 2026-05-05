@@ -271,9 +271,9 @@ export default function Home() {
         }
 
         .about-strip {
-          background: #1a1a18; color: var(--white);
-          display: grid; grid-template-columns: 1fr 1fr;
-        }
+  background: #1a1a18; color: var(--white);
+  display: grid; grid-template-columns: 65fr 35fr;
+}
         .about-left { padding: 4rem 3rem; border-right: 1px solid #2a2a28; }
         .about-left .section-label { color: #666; }
         .about-left .section-label::before { background: #666; }
