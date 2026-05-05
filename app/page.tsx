@@ -11,26 +11,24 @@ export default function Home() {
 
     const fadeEls = document.querySelectorAll(".fade-up");
     const observer = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) {
-        e.target.classList.add("visible");
-        observer.unobserve(e.target);
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            observer.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.05 }
+    );
+    fadeEls.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        (el as HTMLElement).classList.add("visible");
+      } else {
+        observer.observe(el);
       }
     });
-  },
-  { threshold: 0.05 }
-);
-
-// If element is already in view on load (e.g. after back navigation), show it immediately
-fadeEls.forEach((el) => {
-  const rect = el.getBoundingClientRect();
-  if (rect.top < window.innerHeight) {
-    (el as HTMLElement).classList.add("visible");
-  } else {
-    observer.observe(el);
-  }
-});
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -48,9 +46,9 @@ fadeEls.forEach((el) => {
         }
         nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
         .nav-logo {
-            font-family: var(--font-display); font-size: 1rem;
-            letter-spacing: 0.12em; color: var(--black); text-decoration: none;
-          }
+          font-family: var(--font-display); font-size: 1rem;
+          letter-spacing: 0.12em; color: var(--black); text-decoration: none;
+        }
         .nav-links { display: flex; gap: 2.5rem; list-style: none; }
         .nav-links a {
           font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase;
@@ -66,7 +64,7 @@ fadeEls.forEach((el) => {
 
         .hero {
           min-height: 100vh; display: grid;
-          grid-template-columns: 1fr 420px;
+          grid-template-columns: 1fr 480px;
           padding-top: 80px; position: relative; overflow: hidden;
         }
         .hero-left {
@@ -183,6 +181,50 @@ fadeEls.forEach((el) => {
           line-height: 1.15; margin-bottom: 3rem;
         }
 
+        .tool-banner {
+          background: var(--black); padding: 4rem 3rem;
+          display: grid; grid-template-columns: 1fr auto;
+          align-items: center; gap: 3rem;
+          border-bottom: 1px solid #222;
+        }
+        .tool-banner-left .section-label { color: #555; }
+        .tool-banner-left .section-label::before { background: #555; }
+        .tool-banner-title {
+          font-family: var(--font-serif);
+          font-size: clamp(1.6rem, 3vw, 2.2rem);
+          color: var(--white); line-height: 1.2; margin-bottom: 0.75rem;
+        }
+        .tool-banner-sub { font-size: 0.9rem; color: #888; line-height: 1.6; max-width: 480px; }
+        .tool-banner-preview {
+          background: #1a1a18; border: 1px solid #2a2a28;
+          border-radius: 4px; padding: 1.5rem; min-width: 260px;
+        }
+        .tool-banner-preview-label {
+          font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase;
+          color: #555; margin-bottom: 0.75rem;
+        }
+        .tool-banner-preview-q { font-size: 0.78rem; color: #ccc; line-height: 1.5; margin-bottom: 1rem; }
+        .tool-banner-preview-bar { height: 1px; background: #2a2a28; margin-bottom: 1rem; position: relative; }
+        .tool-banner-preview-bar::after {
+          content: ''; position: absolute; left: 0; top: 0; height: 100%;
+          background: var(--accent); animation: barPulse 2s ease-in-out infinite;
+        }
+        @keyframes barPulse { 0%, 100% { width: 60%; } 50% { width: 78%; } }
+        .tool-banner-badge {
+          display: inline-block; background: var(--accent); color: var(--black);
+          font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
+          padding: 0.3rem 0.6rem; font-weight: 500;
+        }
+        .tool-banner-btn {
+          display: inline-block; margin-top: 1.5rem;
+          background: var(--accent); color: var(--black);
+          font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+          padding: 0.85rem 1.75rem; text-decoration: none;
+          font-family: var(--font-body); font-weight: 500;
+          transition: opacity 0.2s;
+        }
+        .tool-banner-btn:hover { opacity: 0.85; }
+
         .work-header {
           display: flex; align-items: flex-end;
           justify-content: space-between; margin-bottom: 3rem;
@@ -271,35 +313,6 @@ fadeEls.forEach((el) => {
         .lang-name { font-size: 0.85rem; color: #ccc; }
         .lang-level { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: #555; }
 
-        .tool-section {
-          padding: 6rem 3rem; display: grid;
-          grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
-        }
-        .tool-preview {
-          background: var(--black); border-radius: 4px; padding: 2rem;
-          aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center;
-        }
-        .tool-preview-inner {
-          width: 100%; max-width: 280px; background: #1a1a18;
-          border: 1px solid #2a2a28; border-radius: 4px; padding: 1.5rem;
-        }
-        .tool-preview-label {
-          font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
-          color: #555; margin-bottom: 0.75rem;
-        }
-        .tool-preview-q { font-size: 0.8rem; color: #ccc; line-height: 1.5; margin-bottom: 1rem; }
-        .tool-preview-bar { height: 1px; background: #2a2a28; margin-bottom: 1rem; position: relative; }
-        .tool-preview-bar::after {
-          content: ''; position: absolute; left: 0; top: 0; height: 100%;
-          background: var(--accent); animation: barPulse 2s ease-in-out infinite;
-        }
-        .tool-preview-badge {
-          display: inline-block; background: var(--accent); color: var(--black);
-          font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
-          padding: 0.3rem 0.6rem; font-weight: 500;
-        }
-        .tool-body { font-size: 0.95rem; line-height: 1.75; color: #555; margin-bottom: 2rem; }
-
         footer {
           background: var(--black); color: var(--white); padding: 4rem 3rem;
           display: grid; grid-template-columns: 1fr auto;
@@ -321,15 +334,16 @@ fadeEls.forEach((el) => {
           nav { padding: 1rem 1.5rem; }
           .nav-links { display: none; }
           .hero { grid-template-columns: 1fr; min-height: auto; }
-          .hero-right { height: 60vw; }
+          .hero-right { height: 70vw; }
           .hero-left { padding: 5rem 1.5rem 3rem; }
           .stats { grid-template-columns: repeat(2, 1fr); }
           .case-studies { grid-template-columns: 1fr; }
           .about-strip { grid-template-columns: 1fr; }
           .about-left { padding: 4rem 1.5rem; border-right: none; border-bottom: 1px solid #222; }
           .about-right { padding: 4rem 1.5rem; }
-          .tool-section { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 1.5rem; }
           .section { padding: 4rem 1.5rem; }
+          .tool-banner { grid-template-columns: 1fr; padding: 3rem 1.5rem; }
+          .tool-banner-preview { min-width: unset; }
           footer { grid-template-columns: 1fr; gap: 2rem; }
           .footer-links { text-align: left; }
         }
@@ -340,7 +354,7 @@ fadeEls.forEach((el) => {
         <ul className="nav-links">
           <li><a href="#work">Work</a></li>
           <li><a href="#about">About</a></li>
-          <li><a href="#tool">Tool</a></li>
+          <li><a href="/tool">Tool</a></li>
           <li><a href="#contact" className="nav-cta">Get in touch</a></li>
         </ul>
       </nav>
@@ -350,7 +364,8 @@ fadeEls.forEach((el) => {
           <div className="hero-tag">Berlin, Germany</div>
           <h1 className="hero-name">
             Enes
-            <span>Gozukucuk</span>
+            <span>Gozu-</span>
+            <span>kucuk</span>
           </h1>
           <p className="hero-role">Product Strategist & Service Designer</p>
           <p className="hero-desc">
@@ -365,12 +380,13 @@ fadeEls.forEach((el) => {
         </div>
         <div className="hero-right">
           <Image
-  src="/enes-gozukucuk.jpg"
-  alt="Enes Gozukucuk"
-  fill
-  sizes="420px"
-style={{ objectFit: "cover", objectPosition: "center top", opacity: 1 }}  priority
-/>
+            src="/enes-gozukucuk.jpg"
+            alt="Enes Gozukucuk"
+            fill
+            sizes="480px"
+            style={{ objectFit: "cover", objectPosition: "center 15%", opacity: 1 }}
+            priority
+          />
           <div className="hero-accent">TH Wildau · Berlin</div>
         </div>
         <div className="hero-scroll">Scroll</div>
@@ -409,6 +425,25 @@ style={{ objectFit: "cover", objectPosition: "center top", opacity: 1 }}  priori
         ))}
       </div>
 
+      {/* TOOL BANNER - moved up, right after stats */}
+      <div className="tool-banner" id="tool">
+        <div className="tool-banner-left">
+          <div className="section-label">Live tool</div>
+          <h2 className="tool-banner-title">AI Persona Builder for practitioners</h2>
+          <p className="tool-banner-sub">
+            Most persona tools stop at demographics. This one asks harder questions. An adaptive questionnaire that goes three levels deep, then generates a persona you can actually interview.
+          </p>
+          <a href="/tool" className="tool-banner-btn">Try the tool</a>
+        </div>
+        <div className="tool-banner-preview">
+          <div className="tool-banner-preview-label">AI Persona Builder · Phase 2 of 4</div>
+          <div className="tool-banner-preview-q">"Describe the last time this person felt underserved by a product or service."</div>
+          <div className="tool-banner-preview-bar" />
+          <div className="tool-banner-badge">Adaptive · Research-quality</div>
+        </div>
+      </div>
+
+      {/* WORK */}
       <section className="section" id="work" style={{ background: "var(--white)" }}>
         <div className="work-header">
           <div>
@@ -454,6 +489,7 @@ style={{ objectFit: "cover", objectPosition: "center top", opacity: 1 }}  priori
         </div>
       </section>
 
+      {/* ABOUT */}
       <section className="about-strip" id="about">
         <div className="about-left">
           <div className="section-label">About</div>
@@ -491,26 +527,6 @@ style={{ objectFit: "cover", objectPosition: "center top", opacity: 1 }}  priori
         </div>
       </section>
 
-      <section className="tool-section" id="tool">
-        <div className="tool-preview">
-          <div className="tool-preview-inner">
-            <div className="tool-preview-label">AI Persona Builder · Phase 2 of 4</div>
-            <div className="tool-preview-q">"Describe the last time this person felt underserved by a product or service."</div>
-            <div className="tool-preview-bar" />
-            <div className="tool-preview-badge">Adaptive · Research-quality</div>
-          </div>
-        </div>
-        <div>
-          <div className="section-label">Live tool</div>
-          <h2 className="section-title">An AI persona builder for practitioners</h2>
-          <p className="tool-body">
-            Most persona tools stop at demographics. This one asks harder questions. An adaptive AI questionnaire that follows up based on what you reveal, going three levels deep: who the person is, how they behave, and why they make the decisions they do.<br /><br />
-            The output is a structured persona you can actually interview. Claude steps into the character and responds as that person would.
-          </p>
-          <a href="https://tools.enesgozukucuk.com" className="btn-primary">Try the tool</a>
-        </div>
-      </section>
-
       <footer id="contact">
         <div>
           <div className="footer-name">ENES GOZUKUCUK</div>
@@ -519,7 +535,7 @@ style={{ objectFit: "cover", objectPosition: "center top", opacity: 1 }}  priori
         <div className="footer-links">
           <a href="mailto:enesgozukucuk@gmail.com">enesgozukucuk@gmail.com</a>
           <a href="https://linkedin.com/in/enesgozukucuk" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <a href="https://tools.enesgozukucuk.com" target="_blank" rel="noopener noreferrer">Persona Tool</a>
+          <a href="/tool" target="_blank" rel="noopener noreferrer">Persona Tool</a>
         </div>
       </footer>
     </>

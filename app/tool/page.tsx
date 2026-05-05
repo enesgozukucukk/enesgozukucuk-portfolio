@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Phase = "domain" | "questionnaire" | "generating" | "persona" | "chat";
 
@@ -108,6 +108,25 @@ export default function Tool() {
   const [exportSent, setExportSent] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("persona-builder-state");
+      if (saved) {
+        const state = JSON.parse(saved);
+        if (state.persona) {
+          setPersona(state.persona);
+          setSelectedDomain(state.selectedDomain);
+          setPhase("persona");
+          if (state.chatMessages && state.chatMessages.length > 0) {
+            setChatMessages(state.chatMessages);
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const callAPI = async (messages: Message[], system: string) => {
     const res = await fetch("/api/persona", {
       method: "POST",
@@ -173,7 +192,10 @@ export default function Tool() {
     const qa = questions
       .map((q, i) => `Q: ${q}\nA: ${finalAnswers[i] || "Not answered"}`)
       .join("\n\n");
+
     const systemPrompt = `You are an expert service designer. Based on research interview answers, generate a rich persona.
+
+Important: never use em dashes in your output. Use commas or short sentences instead.
 
 Return ONLY valid JSON, no markdown, no extra text:
 {
@@ -181,24 +203,33 @@ Return ONLY valid JSON, no markdown, no extra text:
   "age": "Age as number",
   "occupation": "Job title",
   "location": "City, Country",
-  "bio": "2 sentence biography. Specific and human.",
+  "bio": "2 sentence biography. Specific and human. No em dashes.",
   "goals": ["goal 1", "goal 2", "goal 3"],
   "frustrations": ["frustration 1", "frustration 2", "frustration 3"],
   "motivations": ["motivation 1", "motivation 2"],
   "fears": ["fear 1", "fear 2"],
   "personality": ["trait 1", "trait 2", "trait 3", "trait 4"],
-  "quote": "One sentence this person would actually say. Natural, not polished.",
-  "insight": "One sharp insight for a product team. Under 30 words."
+  "quote": "One sentence this person would actually say. Natural, not polished. No em dashes.",
+  "insight": "One sharp insight for a product team. Under 30 words. No em dashes."
 }`;
+
     const response = await callAPI(
       [{ role: "user", content: `Interview answers:\n\n${qa}\n\nGenerate the persona.` }],
       systemPrompt
     );
+
     try {
       const clean = response.replace(/```json|```/g, "").trim();
       const parsed = JSON.parse(clean);
       setPersona(parsed);
       setPhase("persona");
+      try {
+        localStorage.setItem("persona-builder-state", JSON.stringify({
+          persona: parsed,
+          selectedDomain,
+          chatMessages: [],
+        }));
+      } catch { /* ignore */ }
     } catch {
       console.error("Failed to parse persona", response);
     }
@@ -212,6 +243,13 @@ Return ONLY valid JSON, no markdown, no extra text:
         content: `Hi. I am ${persona.name}. ${persona.bio} What would you like to know?`,
       };
       setChatMessages([intro]);
+      try {
+        localStorage.setItem("persona-builder-state", JSON.stringify({
+          persona,
+          selectedDomain,
+          chatMessages: [intro],
+        }));
+      } catch { /* ignore */ }
     }
     setPhase("chat");
   };
@@ -223,6 +261,7 @@ Return ONLY valid JSON, no markdown, no extra text:
     const newMessages = [...chatMessages, userMsg];
     setChatMessages(newMessages);
     setChatInput("");
+
     const systemPrompt = `You are ${persona.name}, a ${persona.age} year old ${persona.occupation} from ${persona.location}.
 
 Bio: ${persona.bio}
@@ -233,10 +272,19 @@ Fears: ${persona.fears.join(", ")}
 Personality: ${persona.personality.join(", ")}
 Your voice: "${persona.quote}"
 
-Respond as this real person. First person only. Stay in character. Never mention AI. Be natural and conversational. Under 100 words.`;
+Respond as this real person. First person only. Stay in character. Never mention AI. Be natural and conversational. Under 100 words. No em dashes.`;
+
     const response = await callAPI(newMessages, systemPrompt);
     const assistantMsg: Message = { role: "assistant", content: response };
-    setChatMessages([...newMessages, assistantMsg]);
+    const finalMessages = [...newMessages, assistantMsg];
+    setChatMessages(finalMessages);
+    try {
+      localStorage.setItem("persona-builder-state", JSON.stringify({
+        persona,
+        selectedDomain,
+        chatMessages: finalMessages,
+      }));
+    } catch { /* ignore */ }
     setLoading(false);
   };
 
@@ -259,6 +307,16 @@ Respond as this real person. First person only. Stay in character. Never mention
       console.error(e);
     }
     setExportLoading(false);
+  };
+
+  const clearSaved = () => {
+    try { localStorage.removeItem("persona-builder-state"); } catch { /* ignore */ }
+    setPhase("domain");
+    setAnswers([]);
+    setCurrentQ(0);
+    setPersona(null);
+    setChatMessages([]);
+    setSelectedDomain(null);
   };
 
   return (
@@ -389,6 +447,14 @@ Respond as this real person. First person only. Stay in character. Never mention
         }
         .btn-outline:hover { border-color: var(--black); }
 
+        .persona-actions {
+          display: flex; flex-wrap: wrap; gap: 0.75rem;
+          margin-top: 2rem; align-items: center;
+        }
+        .persona-actions .btn-main { margin-top: 0; }
+        .persona-actions .btn-outline { margin-top: 0; margin-left: 0; }
+        .persona-actions .btn-ghost { margin-top: 0; margin-left: 0; padding-left: 0; }
+
         .generating-wrap {
           display: flex; flex-direction: column; align-items: center;
           justify-content: center; min-height: 60vh; text-align: center;
@@ -455,6 +521,19 @@ Respond as this real person. First person only. Stay in character. Never mention
           border: 1px solid var(--light-gray); padding: 0.25rem 0.65rem; color: var(--gray);
         }
 
+        .saved-banner {
+          background: var(--light-gray); padding: 0.85rem 1.25rem;
+          margin-bottom: 2rem; display: flex; align-items: center;
+          justify-content: space-between; border-left: 3px solid var(--accent);
+        }
+        .saved-banner-text { font-size: 0.82rem; color: var(--gray); }
+        .saved-banner-clear {
+          font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+          color: var(--gray); background: none; border: none; cursor: pointer;
+          font-family: var(--font-body); transition: color 0.2s;
+        }
+        .saved-banner-clear:hover { color: var(--black); }
+
         .chat-wrap { display: flex; flex-direction: column; }
         .chat-bar {
           background: var(--black); color: var(--white);
@@ -500,6 +579,16 @@ Respond as this real person. First person only. Stay in character. Never mention
         .chat-send:hover { background: #333; }
         .chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
 
+        .chat-footer {
+          display: flex; gap: 1.5rem; margin-top: 1.25rem; align-items: center;
+        }
+        .chat-footer-btn {
+          font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+          color: var(--gray); background: none; border: none; cursor: pointer;
+          font-family: var(--font-body); transition: color 0.2s; padding: 0;
+        }
+        .chat-footer-btn:hover { color: var(--black); }
+
         .export-modal-bg {
           position: fixed; inset: 0; background: rgba(0,0,0,0.5);
           display: flex; align-items: center; justify-content: center; z-index: 200;
@@ -528,9 +617,7 @@ Respond as this real person. First person only. Stay in character. Never mention
           font-family: var(--font-display); font-size: 3rem;
           color: var(--accent); display: block; margin-bottom: 0.5rem;
         }
-        .export-success-text {
-          font-size: 0.9rem; color: var(--gray); line-height: 1.5;
-        }
+        .export-success-text { font-size: 0.9rem; color: var(--gray); line-height: 1.5; }
 
         @media (max-width: 768px) {
           .tool-wrap { padding: 6rem 1.5rem 3rem; }
@@ -540,6 +627,8 @@ Respond as this real person. First person only. Stay in character. Never mention
           .tool-nav { padding: 1rem 1.5rem; }
           .persona-body { padding: 1.5rem; }
           .persona-quote { padding: 1.25rem 1.5rem; }
+          .persona-actions { flex-direction: column; align-items: flex-start; }
+          .persona-actions .btn-outline { margin-left: 0; }
         }
       `}</style>
 
@@ -622,6 +711,10 @@ Respond as this real person. First person only. Stay in character. Never mention
 
         {phase === "persona" && persona && (
           <>
+            <div className="saved-banner">
+              <span className="saved-banner-text">Persona saved. It will be here when you come back.</span>
+              <button className="saved-banner-clear" onClick={clearSaved}>Clear and start over</button>
+            </div>
             <div className="phase-label">Persona Generated</div>
             <h2 className="phase-title" style={{ marginBottom: "2rem" }}>Meet {persona.name}.</h2>
             <div className="persona-card">
@@ -671,21 +764,17 @@ Respond as this real person. First person only. Stay in character. Never mention
                 </div>
               </div>
             </div>
-            <button className="btn-main" onClick={startChat}>
-              {chatMessages.length > 0 ? "Continue interview" : "Interview this persona"}
-            </button>
-            <button className="btn-outline" onClick={() => { setShowExport(true); setExportSent(false); }}>
-              Export results
-            </button>
-            <button className="btn-outline" onClick={() => {
-              setPhase("domain");
-              setAnswers([]);
-              setCurrentQ(0);
-              setPersona(null);
-              setChatMessages([]);
-            }}>
-              Build another
-            </button>
+            <div className="persona-actions">
+              <button className="btn-main" onClick={startChat}>
+                {chatMessages.length > 0 ? "Continue interview" : "Interview this persona"}
+              </button>
+              <button className="btn-outline" onClick={() => { setShowExport(true); setExportSent(false); }}>
+                Export results
+              </button>
+              <button className="btn-ghost" onClick={clearSaved}>
+                Build another
+              </button>
+            </div>
           </>
         )}
 
@@ -736,11 +825,11 @@ Respond as this real person. First person only. Stay in character. Never mention
                 </button>
               </div>
             </div>
-            <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.5rem", alignItems: "center" }}>
-              <button className="btn-ghost" style={{ margin: 0, padding: 0 }} onClick={() => setPhase("persona")}>
+            <div className="chat-footer">
+              <button className="chat-footer-btn" onClick={() => setPhase("persona")}>
                 Back to persona card
               </button>
-              <button className="btn-ghost" style={{ margin: 0 }} onClick={() => { setShowExport(true); setExportSent(false); }}>
+              <button className="chat-footer-btn" onClick={() => { setShowExport(true); setExportSent(false); }}>
                 Export results
               </button>
             </div>
@@ -778,7 +867,7 @@ Respond as this real person. First person only. Stay in character. Never mention
                   <span className="export-success-icon">OK</span>
                   <div className="export-modal-title">Sent.</div>
                   <div className="export-success-text">
-                    Check your inbox for {exportEmail}. It includes the persona card{chatMessages.length > 0 ? " and your conversation" : ""}.
+                    Check your inbox for {exportEmail}.
                   </div>
                   <button className="btn-ghost" style={{ marginTop: "1rem" }} onClick={() => setShowExport(false)}>
                     Close
