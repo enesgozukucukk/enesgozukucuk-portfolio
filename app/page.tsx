@@ -63,12 +63,12 @@ export default function Home() {
         .nav-cta:hover { background: var(--black) !important; color: var(--white) !important; }
 
         .hero {
-          min-height: 100vh; display: grid;
-          grid-template-columns: 1fr 440px;
+          min-height: 85vh; display: grid;
+          grid-template-columns: 1.2fr 380px;
           padding-top: 80px; position: relative; overflow: hidden;
         }
         .hero-left {
-          padding: 4rem 3rem 4rem;
+          padding: 4rem 3rem;
           display: flex; flex-direction: column; justify-content: center;
         }
         .hero-tag {
@@ -82,8 +82,8 @@ export default function Home() {
         }
         .hero-name {
           font-family: var(--font-display);
-          font-size: clamp(3.5rem, 7vw, 6.5rem);
-          line-height: 0.92; letter-spacing: 0.02em;
+          font-size: clamp(2.8rem, 5.5vw, 5rem);
+          line-height: 0.95; letter-spacing: 0.02em;
           color: var(--black); margin-bottom: 0.5rem;
         }
         .hero-name span {
@@ -97,7 +97,7 @@ export default function Home() {
         }
         .hero-desc {
           font-size: 0.95rem; line-height: 1.75; color: #555;
-          max-width: 460px; margin-bottom: 2.5rem;
+          max-width: 560px; margin-bottom: 2.5rem;
         }
         .hero-desc strong { color: var(--black); font-weight: 500; }
         .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
@@ -119,12 +119,6 @@ export default function Home() {
 
         .hero-right {
           position: relative; background: var(--black); overflow: hidden;
-        }
-        .hero-accent {
-          position: absolute; bottom: 2rem; right: 2rem; z-index: 2;
-          background: var(--accent); color: var(--black);
-          font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
-          padding: 0.5rem 0.85rem; font-weight: 500;
         }
         .hero-scroll {
           position: absolute; bottom: 2.5rem; left: 3rem; z-index: 2;
@@ -215,7 +209,9 @@ export default function Home() {
           display: inline-block; background: var(--accent); color: var(--black);
           font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
           padding: 0.3rem 0.6rem; font-weight: 500;
+          text-decoration: none; cursor: pointer; transition: opacity 0.2s;
         }
+        .tool-banner-badge:hover { opacity: 0.85; }
         .tool-banner-btn {
           display: inline-block; margin-top: 1.5rem;
           background: var(--accent); color: var(--black);
@@ -337,7 +333,7 @@ export default function Home() {
           nav { padding: 1rem 1.5rem; }
           .nav-links { display: none; }
           .hero { grid-template-columns: 1fr; min-height: auto; }
-          .hero-right { height: 70vw; }
+          .hero-right { height: 65vw; }
           .hero-left { padding: 5rem 1.5rem 3rem; }
           .stats { grid-template-columns: repeat(2, 1fr); }
           .case-studies { grid-template-columns: 1fr; }
@@ -367,8 +363,7 @@ export default function Home() {
           <div className="hero-tag">Berlin, Germany</div>
           <h1 className="hero-name">
             Enes
-            <span>Gozu-</span>
-            <span>kucuk</span>
+            <span>Gozukucuk</span>
           </h1>
           <p className="hero-role">Product Strategist & Service Designer</p>
           <p className="hero-desc">
@@ -386,11 +381,10 @@ export default function Home() {
             src="/enes-gozukucuk.jpg"
             alt="Enes Gozukucuk"
             fill
-            sizes="440px"
+            sizes="380px"
             style={{ objectFit: "cover", objectPosition: "center 15%", opacity: 1 }}
             priority
           />
-          <div className="hero-accent">TH Wildau · Berlin</div>
         </div>
         <div className="hero-scroll">Scroll</div>
       </section>
@@ -433,15 +427,15 @@ export default function Home() {
           <div className="section-label">Live tool</div>
           <h2 className="tool-banner-title">AI Persona Builder for practitioners</h2>
           <p className="tool-banner-sub">
-            Most persona tools stop at demographics. This one asks harder questions. An adaptive questionnaire that goes three levels deep, then generates a persona you can actually interview.
+            Most persona tools produce surface-level profiles. This one runs an adaptive interview, asks follow-up questions based on your answers, and generates a persona you can have a real conversation with.
           </p>
           <a href="/tool" className="tool-banner-btn">Try the tool</a>
         </div>
         <div className="tool-banner-preview">
-          <div className="tool-banner-preview-label">AI Persona Builder · Phase 2 of 4</div>
+          <div className="tool-banner-preview-label">Live demo · Phase 2 of 4</div>
           <div className="tool-banner-preview-q">"Describe the last time this person felt underserved by a product or service."</div>
           <div className="tool-banner-preview-bar" />
-          <div className="tool-banner-badge">Adaptive · Research-quality</div>
+          <a href="/tool" className="tool-banner-badge">Open the persona builder</a>
         </div>
       </div>
 
