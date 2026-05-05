@@ -64,16 +64,16 @@ export default function Home() {
 
         .hero {
           min-height: 100vh; display: grid;
-          grid-template-columns: 1fr 480px;
+          grid-template-columns: 1fr 440px;
           padding-top: 80px; position: relative; overflow: hidden;
         }
         .hero-left {
-          padding: 5rem 3rem 4rem;
+          padding: 4rem 3rem 4rem;
           display: flex; flex-direction: column; justify-content: center;
         }
         .hero-tag {
           font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
-          color: var(--gray); margin-bottom: 1.5rem;
+          color: var(--gray); margin-bottom: 1.25rem;
           display: flex; align-items: center; gap: 0.75rem;
         }
         .hero-tag::before {
@@ -82,7 +82,7 @@ export default function Home() {
         }
         .hero-name {
           font-family: var(--font-display);
-          font-size: clamp(5rem, 10vw, 9rem);
+          font-size: clamp(3.5rem, 7vw, 6.5rem);
           line-height: 0.92; letter-spacing: 0.02em;
           color: var(--black); margin-bottom: 0.5rem;
         }
@@ -92,12 +92,12 @@ export default function Home() {
         }
         .hero-role {
           font-family: var(--font-serif); font-style: italic;
-          font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-          color: var(--gray); margin-bottom: 2.5rem; margin-top: 0.5rem;
+          font-size: clamp(1rem, 2vw, 1.4rem);
+          color: var(--gray); margin-bottom: 2rem; margin-top: 0.5rem;
         }
         .hero-desc {
-          font-size: 1rem; line-height: 1.75; color: #555;
-          max-width: 480px; margin-bottom: 3rem;
+          font-size: 0.95rem; line-height: 1.75; color: #555;
+          max-width: 460px; margin-bottom: 2.5rem;
         }
         .hero-desc strong { color: var(--black); font-weight: 500; }
         .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
@@ -137,6 +137,7 @@ export default function Home() {
           width: 40px; height: 1px; background: var(--gray);
           animation: scrollLine 2s ease-in-out infinite;
         }
+        @keyframes scrollLine { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         .marquee-bar {
           background: var(--black); color: var(--accent);
@@ -150,23 +151,23 @@ export default function Home() {
           border-bottom: 1px solid var(--light-gray);
         }
         .stat {
-          padding: 3rem 2.5rem; border-right: 1px solid var(--light-gray);
+          padding: 2.5rem 2rem; border-right: 1px solid var(--light-gray);
           transition: background 0.3s; cursor: default;
         }
         .stat:last-child { border-right: none; }
         .stat:hover { background: var(--black); }
         .stat:hover .stat-number, .stat:hover .stat-label, .stat:hover .stat-sub { color: var(--white); }
         .stat-number {
-          font-family: var(--font-display); font-size: 3.5rem;
-          line-height: 1; color: var(--black); margin-bottom: 0.5rem; transition: color 0.3s;
+          font-family: var(--font-display); font-size: 3rem;
+          line-height: 1; color: var(--black); margin-bottom: 0.4rem; transition: color 0.3s;
         }
         .stat-label {
-          font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+          font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
           color: var(--black); font-weight: 500; transition: color 0.3s;
         }
-        .stat-sub { font-size: 0.75rem; color: var(--gray); margin-top: 0.25rem; transition: color 0.3s; }
+        .stat-sub { font-size: 0.72rem; color: var(--gray); margin-top: 0.2rem; transition: color 0.3s; }
 
-        .section { padding: 6rem 3rem; }
+        .section { padding: 5rem 3rem; }
         .section-label {
           font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
           color: var(--gray); margin-bottom: 1rem;
@@ -177,12 +178,12 @@ export default function Home() {
         }
         .section-title {
           font-family: var(--font-serif);
-          font-size: clamp(2rem, 4vw, 3rem);
-          line-height: 1.15; margin-bottom: 3rem;
+          font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+          line-height: 1.15; margin-bottom: 2.5rem;
         }
 
         .tool-banner {
-          background: var(--black); padding: 4rem 3rem;
+          background: var(--black); padding: 3.5rem 3rem;
           display: grid; grid-template-columns: 1fr auto;
           align-items: center; gap: 3rem;
           border-bottom: 1px solid #222;
@@ -191,13 +192,13 @@ export default function Home() {
         .tool-banner-left .section-label::before { background: #555; }
         .tool-banner-title {
           font-family: var(--font-serif);
-          font-size: clamp(1.6rem, 3vw, 2.2rem);
-          color: var(--white); line-height: 1.2; margin-bottom: 0.75rem;
+          font-size: clamp(1.4rem, 2.5vw, 2rem);
+          color: var(--white); line-height: 1.2; margin-bottom: 0.65rem;
         }
-        .tool-banner-sub { font-size: 0.9rem; color: #888; line-height: 1.6; max-width: 480px; }
+        .tool-banner-sub { font-size: 0.875rem; color: #888; line-height: 1.65; max-width: 440px; }
         .tool-banner-preview {
           background: #1a1a18; border: 1px solid #2a2a28;
-          border-radius: 4px; padding: 1.5rem; min-width: 260px;
+          border-radius: 4px; padding: 1.5rem; min-width: 240px;
         }
         .tool-banner-preview-label {
           font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase;
@@ -227,7 +228,7 @@ export default function Home() {
 
         .work-header {
           display: flex; align-items: flex-end;
-          justify-content: space-between; margin-bottom: 3rem;
+          justify-content: space-between; margin-bottom: 2.5rem;
         }
 
         .case-studies {
@@ -235,7 +236,7 @@ export default function Home() {
           gap: 1px; background: var(--light-gray); border: 1px solid var(--light-gray);
         }
         .case-card {
-          background: var(--white); padding: 2.5rem 2rem;
+          background: var(--white); padding: 2rem 1.75rem;
           text-decoration: none; color: inherit;
           display: flex; flex-direction: column;
           transition: background 0.3s; position: relative; overflow: hidden;
@@ -251,54 +252,56 @@ export default function Home() {
         .case-card:hover .case-tags span { color: var(--gray); border-color: #333; }
         .case-card:hover::after { transform: scaleX(1); }
         .case-num {
-          font-family: var(--font-display); font-size: 3.5rem;
-          line-height: 1; color: var(--light-gray); margin-bottom: 1.5rem; transition: color 0.3s;
+          font-family: var(--font-display); font-size: 3rem;
+          line-height: 1; color: var(--light-gray); margin-bottom: 1.25rem; transition: color 0.3s;
         }
         .case-title {
-          font-family: var(--font-serif); font-size: 1.35rem;
-          line-height: 1.2; margin-bottom: 0.75rem; transition: color 0.3s;
+          font-family: var(--font-serif); font-size: 1.2rem;
+          line-height: 1.25; margin-bottom: 0.65rem; transition: color 0.3s;
         }
         .case-hook {
-          font-size: 0.875rem; color: var(--gray); line-height: 1.65;
-          margin-bottom: 1.5rem; flex: 1; transition: color 0.3s;
+          font-size: 0.82rem; color: var(--gray); line-height: 1.65;
+          margin-bottom: 1.25rem; flex: 1; transition: color 0.3s;
         }
         .case-metric {
-          font-family: var(--font-display); font-size: 2rem;
-          color: var(--black); margin-bottom: 1rem; transition: color 0.3s;
+          font-family: var(--font-display); font-size: 1.75rem;
+          color: var(--black); margin-bottom: 0.85rem; transition: color 0.3s;
         }
         .case-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
         .case-tags span {
-          font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
-          border: 1px solid var(--light-gray); padding: 0.25rem 0.6rem;
+          font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+          border: 1px solid var(--light-gray); padding: 0.2rem 0.55rem;
           color: var(--gray); transition: color 0.3s, border-color 0.3s;
         }
 
         .about-strip {
-          background: var(--black); color: var(--white);
+          background: #1a1a18; color: var(--white);
           display: grid; grid-template-columns: 1fr 1fr;
         }
-        .about-left { padding: 6rem 3rem; border-right: 1px solid #222; }
-        .about-left .section-label { color: #555; }
-        .about-left .section-label::before { background: #555; }
-        .about-left .section-title { color: var(--white); }
-        .about-body { font-size: 1rem; line-height: 1.8; color: #aaa; max-width: 480px; }
-        .about-body strong { color: var(--white); font-weight: 400; }
+        .about-left { padding: 4rem 3rem; border-right: 1px solid #2a2a28; }
+        .about-left .section-label { color: #666; }
+        .about-left .section-label::before { background: #666; }
+        .about-left .section-title {
+          color: var(--white); font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 1.5rem;
+        }
+        .about-body { font-size: 0.9rem; line-height: 1.8; color: #bbb; max-width: 420px; }
+        .about-body strong { color: var(--white); font-weight: 500; }
         .about-cta {
-          display: inline-block; margin-top: 2.5rem;
+          display: inline-block; margin-top: 2rem;
           color: var(--accent); font-size: 0.75rem; letter-spacing: 0.15em;
           text-transform: uppercase; text-decoration: none;
           border-bottom: 1px solid #2a3a1a; padding-bottom: 2px; transition: border-color 0.2s;
         }
         .about-cta:hover { border-color: var(--accent); }
-        .about-right { padding: 6rem 3rem; }
-        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .about-right { padding: 4rem 3rem; }
+        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2.5rem; }
         .skill-group-title {
           font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
-          color: #555; margin-bottom: 1rem;
+          color: #666; margin-bottom: 0.85rem;
         }
         .skill-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
         .skill-list li {
-          font-size: 0.9rem; color: #ccc;
+          font-size: 0.875rem; color: #ddd;
           display: flex; align-items: center; gap: 0.6rem;
         }
         .skill-list li::before {
@@ -306,21 +309,21 @@ export default function Home() {
           background: var(--accent); border-radius: 50%; flex-shrink: 0;
         }
         .lang-row {
-          margin-top: 2.5rem; padding-top: 2rem;
-          border-top: 1px solid #1e1e1c; display: flex; gap: 2rem;
+          padding-top: 2rem; border-top: 1px solid #2a2a28;
+          display: flex; gap: 2rem;
         }
         .lang-item { display: flex; flex-direction: column; gap: 0.25rem; }
-        .lang-name { font-size: 0.85rem; color: #ccc; }
-        .lang-level { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: #555; }
+        .lang-name { font-size: 0.875rem; color: #ddd; }
+        .lang-level { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: #666; }
 
         footer {
-          background: var(--black); color: var(--white); padding: 4rem 3rem;
+          background: #0d0d0d; color: var(--white); padding: 3.5rem 3rem;
           display: grid; grid-template-columns: 1fr auto;
           align-items: end; border-top: 1px solid #1a1a18;
         }
         .footer-name {
-          font-family: var(--font-display); font-size: 3rem;
-          letter-spacing: 0.05em; margin-bottom: 0.75rem;
+          font-family: var(--font-display); font-size: 2.5rem;
+          letter-spacing: 0.05em; margin-bottom: 0.5rem;
         }
         .footer-sub { font-size: 0.8rem; color: #555; letter-spacing: 0.08em; }
         .footer-links { display: flex; flex-direction: column; gap: 0.75rem; text-align: right; }
@@ -339,12 +342,12 @@ export default function Home() {
           .stats { grid-template-columns: repeat(2, 1fr); }
           .case-studies { grid-template-columns: 1fr; }
           .about-strip { grid-template-columns: 1fr; }
-          .about-left { padding: 4rem 1.5rem; border-right: none; border-bottom: 1px solid #222; }
-          .about-right { padding: 4rem 1.5rem; }
-          .section { padding: 4rem 1.5rem; }
+          .about-left { padding: 3rem 1.5rem; border-right: none; border-bottom: 1px solid #2a2a28; }
+          .about-right { padding: 3rem 1.5rem; }
+          .section { padding: 3.5rem 1.5rem; }
           .tool-banner { grid-template-columns: 1fr; padding: 3rem 1.5rem; }
           .tool-banner-preview { min-width: unset; }
-          footer { grid-template-columns: 1fr; gap: 2rem; }
+          footer { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; }
           .footer-links { text-align: left; }
         }
       `}</style>
@@ -364,7 +367,8 @@ export default function Home() {
           <div className="hero-tag">Berlin, Germany</div>
           <h1 className="hero-name">
             Enes
-            <span>Gozukucuk</span>
+            <span>Gozu-</span>
+            <span>kucuk</span>
           </h1>
           <p className="hero-role">Product Strategist & Service Designer</p>
           <p className="hero-desc">
@@ -382,7 +386,7 @@ export default function Home() {
             src="/enes-gozukucuk.jpg"
             alt="Enes Gozukucuk"
             fill
-            sizes="480px"
+            sizes="440px"
             style={{ objectFit: "cover", objectPosition: "center 15%", opacity: 1 }}
             priority
           />
@@ -424,7 +428,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* TOOL BANNER - moved up, right after stats */}
       <div className="tool-banner" id="tool">
         <div className="tool-banner-left">
           <div className="section-label">Live tool</div>
@@ -442,7 +445,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* WORK */}
       <section className="section" id="work" style={{ background: "var(--white)" }}>
         <div className="work-header">
           <div>
@@ -488,15 +490,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ABOUT */}
       <section className="about-strip" id="about">
         <div className="about-left">
           <div className="section-label">About</div>
           <h2 className="section-title">Business thinking,<br />user insight, built in code.</h2>
           <p className="about-body">
-            I studied Management Information Systems at Bogazici University, which gave me a foundation in systems thinking and data. Now I am finishing a Masters in European Business Management at TH Wildau, where I also work as a student assistant on a service design project for the university itself.<br /><br />
-            Before Berlin, I worked in business development across <strong>19 international markets</strong>, ran social media growth for an edtech company, and spent time in a call centre handling hundreds of customer interactions daily. Each role taught me something different about how people make decisions and where systems break down.<br /><br />
-            I write code too. TypeScript, Flutter, Firebase, Next.js. It changes how I think about design because I know what is actually buildable.
+            I studied Management Information Systems at Bogazici University, then moved to Berlin for a Masters in European Business Management at TH Wildau. Alongside the degree, I work as a student assistant redesigning the university as a service from scratch.<br /><br />
+            Before Berlin: business development across 19 markets, growth strategy for an edtech brand, and a year in a high-volume customer operations role. Each one taught me something different about how people behave under friction.<br /><br />
+            I also build. TypeScript, Flutter, Firebase, Next.js.
           </p>
           <a href="#contact" className="about-cta">Get in touch</a>
         </div>
@@ -534,7 +535,7 @@ export default function Home() {
         <div className="footer-links">
           <a href="mailto:enesgozukucuk@gmail.com">enesgozukucuk@gmail.com</a>
           <a href="https://linkedin.com/in/enesgozukucuk" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <a href="/tool" target="_blank" rel="noopener noreferrer">Persona Tool</a>
+          <a href="/tool">Persona Tool</a>
         </div>
       </footer>
     </>
