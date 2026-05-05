@@ -274,14 +274,12 @@ export default function Home() {
   background: #1a1a18; color: var(--white);
   display: grid; grid-template-columns: 65fr 35fr;
 }
-        .about-left { padding: 4rem 3rem; border-right: 1px solid #2a2a28; }
-        .about-left .section-label { color: #666; }
+        .about-left { padding: 4rem 3rem 4rem 3rem; border-right: 1px solid #2a2a28; width: 100%; }        .about-left .section-label { color: #666; }
         .about-left .section-label::before { background: #666; }
         .about-left .section-title {
           color: var(--white); font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 1.5rem;
         }
-        .about-body { font-size: 0.9rem; line-height: 1.8; color: #bbb; max-width: 420px; }
-        .about-body strong { color: var(--white); font-weight: 500; }
+.       about-body { font-size: 0.9rem; line-height: 1.8; color: #bbb; max-width: 100%; }        .about-body strong { color: var(--white); font-weight: 500; }
         .about-cta {
           display: inline-block; margin-top: 2rem;
           color: var(--accent); font-size: 0.75rem; letter-spacing: 0.15em;
