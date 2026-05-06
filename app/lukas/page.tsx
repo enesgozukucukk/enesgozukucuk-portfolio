@@ -416,8 +416,8 @@ export default function Lukas() {
             <div>
               <div className="lukas-header-title">Lukas interviewen</div>
               <div className="lukas-header-sub">
-                Research-Persona aus dem Kurs{" "}
-                <strong>Service Design - Wie funktioniert nutzendenzentriertes Gestalten?</strong>{" "}
+                Persona aus dem Modul Service Design{" "}
+                <strong>entwickelt von Studierenden</strong>{" "}
                 an der TH Wildau. Stell ihm Fragen zur Studierendenperspektive.
               </div>
             </div>
@@ -456,7 +456,7 @@ export default function Lukas() {
             <>
               <div className="chat-messages">
                 <div className="context-banner">
-                  <strong>Lukas Berger</strong>, 23, Wirtschaftsinformatik im 5. Semester.
+                  <strong>Lukas</strong>, 23, Wirtschaftsinformatik im 5. Semester.
                   WG in Wildau, Nebenjob bei Media Markt, kommt aus Neubrandenburg.
                   Dein Gesprach wird gespeichert.
                 </div>
