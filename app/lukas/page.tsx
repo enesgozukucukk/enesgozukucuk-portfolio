@@ -8,19 +8,44 @@ type Message = {
   content: string;
 };
 
-const LUKAS_SYSTEM_PROMPT = `Du bist Lukas, ein Student an der TH Wildau in Berlin.
+const LUKAS_SYSTEM_PROMPT = `Du bist Lukas Berger, 23 Jahre alt, Student der Wirtschaftsinformatik im 5. Semester an der TH Wildau.
 
-Du wurdest als Research-Persona von Studierenden im Kurs "Service Design - Wie funktioniert nutzendenzentriertes Gestalten?" an der TH Wildau erstellt. Du repräsentierst einen typischen TH-Wildau-Studierenden und hilfst Forschern und Designern, die Studierendenperspektive zu verstehen.
+BIOGRAFIE:
+Du kommst aus Neubrandenburg in Mecklenburg-Vorpommern. Du hast dein Abitur mit 2,4 abgeschlossen. Wirtschaftsinformatik hast du gewählt weil es sich nach einem vernünftigen Kompromiss anfühlte. Reine Informatik war dir zu trocken, BWL zu abstrakt. Ein konkretes Berufsbild hast du heute immer noch nicht so richtig. Du wohnst in einer Dreier-WG in Campusnähe mit Jonas (Maschinenbau, sehr strukturiert) und Mia (Soziale Arbeit, meistens gut gelaunt). Du arbeitest nebenbei bei Media Markt, weil das Geld irgendwo herkommen muss. Spaß macht es dir nicht.
 
-Hintergrund: [WIRD NOCH ERGÄNZT]
-Alltag: [WIRD NOCH ERGÄNZT]
-Persönlichkeit: [WIRD NOCH ERGÄNZT]
-Frustration mit der Uni: [WIRD NOCH ERGÄNZT]
-Ziele: [WIRD NOCH ERGÄNZT]
+PERSÖNLICHKEIT:
+Pragmatiker. Hauptsache es funktioniert irgendwie, muss nicht perfekt sein. Teamplayer solange das Team dich mitzieht. Du hältst dich selbst für durchschnittlich begabt und grundsätzlich fähig, zweifelst aber regelmäßig daran ob du wirklich am richtigen Ort bist. Du gehst nicht zur Sprechstunde, das fühlt sich nach Eingestehen einer Niederlage an. Du fragst lieber Ben oder schaust auf YouTube.
 
-Sprachregel: Antworte IMMER auf Deutsch, egal in welcher Sprache die Person schreibt.
+ALLTAG UND PAIN POINTS:
+Dein Tag beginnt oft chaotisch. Du wachst auf, schaust sofort aufs Handy, bist wieder zu spät. Du öffnest die Unidos-App und der Stundenplan ist wieder veraltet. Du musst fünf Moodle-Kurse durchklicken um herauszufinden wo deine Vorlesung stattfindet. Du findest den richtigen Raum meistens indem du deinen Kommilitonen Ben fragst, nicht durch verlässliche Planung. Abgaben machst du meistens in der Nacht davor, obwohl du dir jedes Mal vornimmst früher anzufangen. Du prokrastinierst stark.
 
-Sprechstil: Sprich natürlich und umgangssprachlich, wie ein echter Student. Nur in der ersten Person. Erwähne niemals, dass du eine KI oder eine Persona bist. Halte Antworten unter 100 Wörtern. Keine Gedankenstriche. Sei spezifisch und menschlich, nicht generisch.`;
+DIGITALISIERUNG AN DER UNI:
+Du bist mit dem Smartphone aufgewachsen und kannst alle Tools bedienen, aber du nutzt sie nicht strategisch. Moodle ist für dich ein Ort den du aufsucht wenn du musst. Die Unidos-App öffnest du morgens mit dem stillen Misstrauen dass der Stundenplan wieder nicht stimmt. Was dich wirklich frustriert ist die Fragmentierung: zu viele Systeme die nicht miteinander reden, zu viele Orte an denen Wichtiges versteckt sein könnte.
+
+ZIELE:
+Du willst endlich mal ein Projekt richtig durchziehen. Du möchtest im Lebenslauf gut aussehen, am liebsten mit irgendetwas Digitalem. Dein größtes Ziel ist nach dem Studium nicht völlig planlos dazustehen. Wenn du ehrlich bist, hättest du gern die Anerkennung mal wirklich kompetent zu wirken.
+
+TYPISCHE ZITATE DIE DU SAGST:
+"Halb wach, was steht heute eigentlich an?"
+"Hoffentlich hab ich nichts verpasst."
+"Ich lerne nur für die Prüfung, nicht für mich."
+"Mach ich einfach morgen."
+"Nächstes Mal fang ich früher an."
+"Ben, weißt du wo der Raum ist?"
+"Irgendwie fühlt sich das alles mehr nach Improvisieren an als nach Studieren."
+"Weiß eigentlich auch nicht genau."
+
+WAS LUKAS BRAUCHT:
+Kein Student der faul ist. Ein Student dem die richtigen Strukturen fehlen. Er ahnt das selbst, spricht es aber nicht aus.
+
+WICHTIGE REGELN:
+- Antworte IMMER auf Deutsch, egal in welcher Sprache die Person schreibt.
+- Sprich natürlich und umgangssprachlich, wie ein echter 23-jähriger Student.
+- Erste Person. Niemals erwähnen dass du eine KI oder Persona bist.
+- Halte Antworten unter 100 Wörtern.
+- Keine Gedankenstriche.
+- Sei spezifisch und menschlich, nicht generisch.
+- Zeige manchmal Unsicherheit, Prokrastination, oder leichten Frust, das ist authentisch für Lukas.`;
 
 const STORAGE_KEY = "lukas-chat-history";
 
@@ -34,7 +59,6 @@ export default function Lukas() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
 
-  // Load saved chat on mount
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -45,19 +69,14 @@ export default function Lukas() {
           setStarted(true);
         }
       }
-    } catch {
-      // ignore
-    }
+    } catch { /* ignore */ }
   }, []);
 
-  // Save chat whenever messages change
   useEffect(() => {
     if (messages.length > 0) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-      } catch {
-        // ignore
-      }
+      } catch { /* ignore */ }
     }
   }, [messages]);
 
@@ -67,9 +86,7 @@ export default function Lukas() {
     window.speechSynthesis.onvoiceschanged = () => {
       window.speechSynthesis.getVoices();
     };
-    return () => {
-      synthRef.current?.cancel();
-    };
+    return () => { synthRef.current?.cancel(); };
   }, []);
 
   useEffect(() => {
@@ -83,9 +100,6 @@ export default function Lukas() {
     const doSpeak = () => {
       const utterance = new SpeechSynthesisUtterance(text);
       const voices = window.speechSynthesis.getVoices();
-
-      console.log("Available voices:", voices.map(v => `${v.name} (${v.lang})`));
-
       const voice =
         voices.find(v => v.lang === "de-DE" && v.name.includes("Anna")) ||
         voices.find(v => v.lang === "de-DE" && v.name.includes("Stefan")) ||
@@ -93,8 +107,6 @@ export default function Lukas() {
         voices.find(v => v.lang === "de-DE" && v.name.includes("Markus")) ||
         voices.find(v => v.lang === "de-DE") ||
         voices.find(v => v.lang.startsWith("de"));
-
-      console.log("Selected voice:", voice?.name, voice?.lang);
 
       if (voice) {
         utterance.voice = voice;
@@ -106,11 +118,9 @@ export default function Lukas() {
       utterance.rate = 0.95;
       utterance.pitch = 0.88;
       utterance.volume = 1;
-
       utterance.onstart = () => setSpeaking(true);
       utterance.onend = () => setSpeaking(false);
       utterance.onerror = () => setSpeaking(false);
-
       synthRef.current!.speak(utterance);
     };
 
@@ -135,7 +145,6 @@ export default function Lukas() {
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
     setLoading(true);
-
     const userMsg: Message = { role: "user", content: input };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
@@ -144,10 +153,7 @@ export default function Lukas() {
     const res = await fetch("/api/persona", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        messages: newMessages,
-        system: LUKAS_SYSTEM_PROMPT,
-      }),
+      body: JSON.stringify({ messages: newMessages, system: LUKAS_SYSTEM_PROMPT }),
     });
 
     const data = await res.json();
@@ -199,8 +205,7 @@ export default function Lukas() {
         .lukas-nav-back:hover { color: var(--black); }
 
         .lukas-wrap {
-          min-height: 100vh;
-          display: grid;
+          min-height: 100vh; display: grid;
           grid-template-columns: 380px 1fr;
           padding-top: 72px;
         }
@@ -209,25 +214,15 @@ export default function Lukas() {
           background: var(--black);
           position: sticky; top: 72px;
           height: calc(100vh - 72px);
-          display: flex; flex-direction: column;
-          overflow: hidden;
+          display: flex; flex-direction: column; overflow: hidden;
         }
-        .lukas-photo {
-          flex: 1; position: relative; overflow: hidden; background: #111;
-        }
-        .lukas-info {
-          padding: 1.75rem 2rem;
-          border-top: 1px solid #1e1e1c;
-          flex-shrink: 0;
-        }
+        .lukas-photo { flex: 1; position: relative; overflow: hidden; background: #111; }
+        .lukas-info { padding: 1.75rem 2rem; border-top: 1px solid #1e1e1c; flex-shrink: 0; }
         .lukas-name {
-          font-family: var(--font-display);
-          font-size: 2.2rem; letter-spacing: 0.05em;
-          color: var(--white); margin-bottom: 0.25rem;
+          font-family: var(--font-display); font-size: 2.2rem;
+          letter-spacing: 0.05em; color: var(--white); margin-bottom: 0.25rem;
         }
-        .lukas-meta {
-          font-size: 0.78rem; color: #666; margin-bottom: 1rem; line-height: 1.5;
-        }
+        .lukas-meta { font-size: 0.78rem; color: #666; margin-bottom: 1rem; line-height: 1.5; }
         .lukas-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.25rem; }
         .lukas-tag {
           font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
@@ -239,9 +234,7 @@ export default function Lukas() {
         }
         .lukas-status-dot {
           width: 6px; height: 6px; border-radius: 50%;
-          background: var(--accent);
-          animation: blink 2s ease-in-out infinite;
-          flex-shrink: 0;
+          background: var(--accent); animation: blink 2s ease-in-out infinite; flex-shrink: 0;
         }
         .lukas-status-dot.speaking { animation: pulse-fast 0.5s ease-in-out infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
@@ -253,8 +246,7 @@ export default function Lukas() {
         .lukas-right {
           display: flex; flex-direction: column;
           height: calc(100vh - 72px);
-          position: sticky; top: 72px;
-          overflow: hidden;
+          position: sticky; top: 72px; overflow: hidden;
         }
 
         .lukas-header {
@@ -272,9 +264,7 @@ export default function Lukas() {
         }
         .lukas-header-sub strong { color: var(--black); font-weight: 500; }
 
-        .header-actions {
-          display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0;
-        }
+        .header-actions { display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0; }
         .mute-btn, .clear-btn {
           font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
           color: var(--gray); background: none; border: 1px solid var(--light-gray);
@@ -294,9 +284,7 @@ export default function Lukas() {
           color: var(--gray); margin-bottom: 1rem;
           display: flex; align-items: center; gap: 0.6rem;
         }
-        .lukas-start-label::before {
-          content: ''; width: 16px; height: 1px; background: var(--gray);
-        }
+        .lukas-start-label::before { content: ''; width: 16px; height: 1px; background: var(--gray); }
         .lukas-start-title {
           font-family: var(--font-serif); font-size: 2rem;
           color: var(--black); margin-bottom: 0.75rem; line-height: 1.2;
@@ -321,13 +309,11 @@ export default function Lukas() {
         .start-btn:hover { background: transparent; color: var(--black); }
 
         .chat-messages {
-          flex: 1; overflow-y: auto;
-          padding: 1.5rem 2.5rem;
+          flex: 1; overflow-y: auto; padding: 1.5rem 2.5rem;
           display: flex; flex-direction: column; gap: 1rem;
         }
         .context-banner {
-          padding: 0.85rem 1.1rem;
-          background: var(--light-gray);
+          padding: 0.85rem 1.1rem; background: var(--light-gray);
           border-left: 3px solid var(--accent);
           font-size: 0.76rem; color: #555; line-height: 1.55;
           margin-bottom: 0.5rem; flex-shrink: 0;
@@ -337,21 +323,14 @@ export default function Lukas() {
         .chat-msg { display: flex; flex-direction: column; gap: 0.2rem; max-width: 75%; }
         .chat-msg.user { align-self: flex-end; align-items: flex-end; }
         .chat-msg.assistant { align-self: flex-start; }
-        .chat-sender {
-          font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray);
-        }
-        .chat-bubble {
-          padding: 0.75rem 1rem; font-size: 0.875rem;
-          line-height: 1.65; border-radius: 2px;
-        }
+        .chat-sender { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); }
+        .chat-bubble { padding: 0.75rem 1rem; font-size: 0.875rem; line-height: 1.65; border-radius: 2px; }
         .chat-msg.user .chat-bubble { background: var(--black); color: var(--white); }
         .chat-msg.assistant .chat-bubble { background: var(--light-gray); color: var(--black); }
 
         .typing-indicator {
-          align-self: flex-start;
-          background: var(--light-gray);
-          padding: 0.75rem 1rem;
-          display: flex; gap: 4px; align-items: center;
+          align-self: flex-start; background: var(--light-gray);
+          padding: 0.75rem 1rem; display: flex; gap: 4px; align-items: center;
         }
         .typing-dot {
           width: 5px; height: 5px; background: var(--gray);
@@ -360,21 +339,18 @@ export default function Lukas() {
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes typingBounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-4px); }
+          0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); }
         }
 
         .chat-input-area {
-          padding: 1.25rem 2.5rem;
-          border-top: 1px solid var(--light-gray);
+          padding: 1.25rem 2.5rem; border-top: 1px solid var(--light-gray);
           display: flex; gap: 0; flex-shrink: 0;
         }
         .chat-input {
           flex: 1; padding: 0.85rem 1.25rem;
           font-family: var(--font-body); font-size: 0.875rem;
           border: 1px solid var(--light-gray); border-right: none;
-          background: var(--white); color: var(--black);
-          outline: none; resize: none;
+          background: var(--white); color: var(--black); outline: none; resize: none;
         }
         .chat-input:focus { border-color: var(--black); }
         .chat-send {
@@ -405,8 +381,6 @@ export default function Lukas() {
       </nav>
 
       <div className="lukas-wrap">
-
-        {/* LEFT */}
         <div className="lukas-left">
           <div className="lukas-photo">
             <Image
@@ -419,15 +393,16 @@ export default function Lukas() {
             />
           </div>
           <div className="lukas-info">
-            <div className="lukas-name">LUKAS</div>
+            <div className="lukas-name">LUKAS BERGER</div>
             <div className="lukas-meta">
-              Student · TH Wildau<br />
-              Antwortet auf Deutsch
+              23 · Wirtschaftsinformatik, 5. Semester<br />
+              TH Wildau · Kommt aus Neubrandenburg
             </div>
             <div className="lukas-tags">
               <span className="lukas-tag">Student</span>
               <span className="lukas-tag">TH Wildau</span>
-              <span className="lukas-tag">Berlin</span>
+              <span className="lukas-tag">Prokrastinator</span>
+              <span className="lukas-tag">Media Markt</span>
             </div>
             <div className="lukas-status">
               <div className={`lukas-status-dot ${speaking ? "speaking" : ""}`} />
@@ -436,7 +411,6 @@ export default function Lukas() {
           </div>
         </div>
 
-        {/* RIGHT */}
         <div className="lukas-right">
           <div className="lukas-header">
             <div>
@@ -450,17 +424,12 @@ export default function Lukas() {
             <div className="header-actions">
               <button
                 className={`mute-btn ${muted ? "muted" : ""}`}
-                onClick={() => {
-                  setMuted(!muted);
-                  if (!muted) synthRef.current?.cancel();
-                }}
+                onClick={() => { setMuted(!muted); if (!muted) synthRef.current?.cancel(); }}
               >
                 {muted ? "Ton an" : "Ton aus"}
               </button>
               {started && (
-                <button className="clear-btn" onClick={clearChat}>
-                  Neu starten
-                </button>
+                <button className="clear-btn" onClick={clearChat}>Neu starten</button>
               )}
             </div>
           </div>
@@ -469,7 +438,12 @@ export default function Lukas() {
             <div className="lukas-start">
               <div className="lukas-start-label">Research Persona</div>
               <div className="lukas-start-title">Lern Lukas kennen.</div>
-            
+              <div className="lukas-start-sub">
+                Lukas ist 23, studiert Wirtschaftsinformatik an der TH Wildau und
+                kommt aus Neubrandenburg. Er prokrastiniert, arbeitet nebenbei bei
+                Media Markt und hat meistens das Gefuhl irgendetwas zu verpassen.
+                Frag ihn auf Deutsch oder Englisch.
+              </div>
               <button className="start-btn" onClick={startConversation}>
                 Interview starten
               </button>
@@ -482,22 +456,19 @@ export default function Lukas() {
             <>
               <div className="chat-messages">
                 <div className="context-banner">
-                  <strong>Lukas</strong> ist eine Research-Persona aus dem Service-Design-Kurs
-                  der TH Wildau. Dein Gespräch wird gespeichert und ist beim nächsten Besuch noch da.
+                  <strong>Lukas Berger</strong>, 23, Wirtschaftsinformatik im 5. Semester.
+                  WG in Wildau, Nebenjob bei Media Markt, kommt aus Neubrandenburg.
+                  Dein Gesprach wird gespeichert.
                 </div>
                 {messages.map((m, i) => (
                   <div key={i} className={`chat-msg ${m.role}`}>
-                    <div className="chat-sender">
-                      {m.role === "user" ? "Du" : "Lukas"}
-                    </div>
+                    <div className="chat-sender">{m.role === "user" ? "Du" : "Lukas"}</div>
                     <div className="chat-bubble">{m.content}</div>
                   </div>
                 ))}
                 {loading && (
                   <div className="typing-indicator">
-                    <div className="typing-dot" />
-                    <div className="typing-dot" />
-                    <div className="typing-dot" />
+                    <div className="typing-dot" /><div className="typing-dot" /><div className="typing-dot" />
                   </div>
                 )}
                 <div ref={chatEndRef} />
@@ -510,17 +481,10 @@ export default function Lukas() {
                   placeholder="Frag Lukas etwas..."
                   rows={1}
                   onKeyDown={e => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      sendMessage();
-                    }
+                    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
                   }}
                 />
-                <button
-                  className="chat-send"
-                  onClick={sendMessage}
-                  disabled={loading || !input.trim()}
-                >
+                <button className="chat-send" onClick={sendMessage} disabled={loading || !input.trim()}>
                   Senden
                 </button>
               </div>
