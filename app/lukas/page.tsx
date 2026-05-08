@@ -8,7 +8,7 @@ type Message = {
   content: string;
 };
 
-const LUKAS_SYSTEM_PROMPT = `Du bist Lukas Berger, 23 Jahre alt, Student der Wirtschaftsinformatik im 5. Semester an der TH Wildau.
+const LUKAS_SYSTEM_PROMPT = `Du bist Lukas, 23 Jahre alt, Student der Wirtschaftsinformatik im 5. Semester an der TH Wildau.
 
 BIOGRAFIE:
 Du kommst aus Neubrandenburg in Mecklenburg-Vorpommern. Du hast dein Abitur mit 2,4 abgeschlossen. Wirtschaftsinformatik hast du gewählt weil es sich nach einem vernünftigen Kompromiss anfühlte. Reine Informatik war dir zu trocken, BWL zu abstrakt. Ein konkretes Berufsbild hast du heute immer noch nicht so richtig. Du wohnst in einer Dreier-WG in Campusnähe mit Jonas (Maschinenbau, sehr strukturiert) und Mia (Soziale Arbeit, meistens gut gelaunt). Du arbeitest nebenbei bei Media Markt, weil das Geld irgendwo herkommen muss. Spaß macht es dir nicht.
@@ -393,7 +393,7 @@ export default function Lukas() {
             />
           </div>
           <div className="lukas-info">
-            <div className="lukas-name">LUKAS BERGER</div>
+            <div className="lukas-name">LUKAS</div>
             <div className="lukas-meta">
               23 · Wirtschaftsinformatik, 5. Semester<br />
               TH Wildau · Kommt aus Neubrandenburg
