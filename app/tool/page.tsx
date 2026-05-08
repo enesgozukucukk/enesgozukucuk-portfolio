@@ -2,9 +2,15 @@
 
 import { useState, useEffect } from "react";
 
-type Phase = "domain" | "questionnaire" | "generating" | "persona" | "chat";
+type Phase = "domain" | "personatype" | "questionnaire" | "generating" | "persona" | "chat";
 
 type Domain = {
+  id: string;
+  label: string;
+  description: string;
+};
+
+type PersonaType = {
   id: string;
   label: string;
   description: string;
@@ -39,6 +45,19 @@ const domains: Domain[] = [
   { id: "publicservices", label: "Public Services", description: "Citizens, government, NGOs" },
   { id: "b2b", label: "B2B", description: "Businesses selling to businesses" },
   { id: "mobility", label: "Mobility", description: "Transport, logistics, travel" },
+];
+
+const personaTypes: PersonaType[] = [
+  { id: "user", label: "End User / Customer", description: "The person who uses the product or service directly" },
+  { id: "student", label: "Student", description: "Learner at any level or institution" },
+  { id: "lecturer", label: "Lecturer / Teacher", description: "Educator, instructor or trainer" },
+  { id: "staff_admin", label: "Administrative Staff", description: "Back-office, enrollment, paperwork" },
+  { id: "staff_org", label: "Organisational Staff", description: "Operations, HR, management" },
+  { id: "staff_teaching", label: "Teaching Support Staff", description: "Lab assistants, tutors, teaching aids" },
+  { id: "professional", label: "Professional / Expert", description: "Specialist or practitioner in a field" },
+  { id: "manager", label: "Manager / Decision Maker", description: "Person with authority and budget" },
+  { id: "caregiver", label: "Caregiver / Family Member", description: "Person supporting someone else" },
+  { id: "citizen", label: "Citizen / Community Member", description: "Member of the general public" },
 ];
 
 const baseQuestions = [
@@ -83,15 +102,72 @@ const domainQuestions: Record<string, string[]> = {
   general: [],
 };
 
+const personaTypeQuestions: Record<string, string[]> = {
+  student: [
+    "What motivates them to keep going when studying gets hard?",
+    "How do they feel about the institution they are part of?",
+  ],
+  lecturer: [
+    "What does a good teaching day look like for them?",
+    "What institutional pressures affect their work most?",
+  ],
+  staff_admin: [
+    "What processes take up most of their time?",
+    "Where do they feel the system lets them or others down?",
+  ],
+  staff_org: [
+    "How do they balance organisational goals with people's needs?",
+    "What change would make the biggest difference in their work?",
+  ],
+  staff_teaching: [
+    "How do they support learners day to day?",
+    "What resources or structures are missing that would help them?",
+  ],
+  professional: [
+    "How do they stay current in their field?",
+    "What does excellence look like in their role?",
+  ],
+  manager: [
+    "How do they prioritise when everything feels urgent?",
+    "What does success for their team look like?",
+  ],
+  caregiver: [
+    "How does caregiving affect the rest of their life?",
+    "What support do they wish they had?",
+  ],
+  citizen: [
+    "How do they interact with public services in daily life?",
+    "What would make them feel more heard or included?",
+  ],
+  user: [],
+};
+
 const followUpMap: Record<number, string> = {
   2: "What would achieving that actually change for them day to day?",
   3: "Can you give a specific example of when that frustration came up?",
   5: "Where does that worry come from? Has something happened to trigger it?",
 };
 
+const avatars = [
+  { id: "avatar1", emoji: "👩‍💼", label: "Professional Woman" },
+  { id: "avatar2", emoji: "👨‍💼", label: "Professional Man" },
+  { id: "avatar3", emoji: "👩‍🎓", label: "Student Woman" },
+  { id: "avatar4", emoji: "👨‍🎓", label: "Student Man" },
+  { id: "avatar5", emoji: "👩‍⚕️", label: "Healthcare Woman" },
+  { id: "avatar6", emoji: "👨‍⚕️", label: "Healthcare Man" },
+  { id: "avatar7", emoji: "👩‍🏫", label: "Teacher Woman" },
+  { id: "avatar8", emoji: "👨‍🏫", label: "Teacher Man" },
+  { id: "avatar9", emoji: "🧓", label: "Senior" },
+  { id: "avatar10", emoji: "👶", label: "Young Person" },
+  { id: "avatar11", emoji: "👩‍🔧", label: "Technical Woman" },
+  { id: "avatar12", emoji: "👨‍🔧", label: "Technical Man" },
+];
+
 export default function Tool() {
   const [phase, setPhase] = useState<Phase>("domain");
   const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
+  const [selectedPersonaType, setSelectedPersonaType] = useState<PersonaType | null>(null);
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const [questions, setQuestions] = useState<string[]>([]);
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
@@ -116,15 +192,15 @@ export default function Tool() {
         if (state.persona) {
           setPersona(state.persona);
           setSelectedDomain(state.selectedDomain);
+          setSelectedPersonaType(state.selectedPersonaType);
+          setSelectedAvatar(state.selectedAvatar || null);
           setPhase("persona");
           if (state.chatMessages && state.chatMessages.length > 0) {
             setChatMessages(state.chatMessages);
           }
         }
       }
-    } catch {
-      // ignore
-    }
+    } catch { /* ignore */ }
   }, []);
 
   const callAPI = async (messages: Message[], system: string) => {
@@ -137,10 +213,16 @@ export default function Tool() {
     return data.content?.[0]?.text || "";
   };
 
-  const startQuestionnaire = (domain: Domain) => {
+  const selectDomain = (domain: Domain) => {
     setSelectedDomain(domain);
-    const extra = domainQuestions[domain.id] || [];
-    setQuestions([...baseQuestions, ...extra]);
+    setPhase("personatype");
+  };
+
+  const startQuestionnaire = (type: PersonaType) => {
+    setSelectedPersonaType(type);
+    const domainExtra = domainQuestions[selectedDomain?.id || ""] || [];
+    const typeExtra = personaTypeQuestions[type.id] || [];
+    setQuestions([...baseQuestions, ...domainExtra, ...typeExtra]);
     setPhase("questionnaire");
   };
 
@@ -195,13 +277,16 @@ export default function Tool() {
 
     const systemPrompt = `You are an expert service designer. Based on research interview answers, generate a rich persona.
 
-Important: never use em dashes in your output. Use commas or short sentences instead.
+The persona type is: ${selectedPersonaType?.label || "general"}
+The domain context is: ${selectedDomain?.label || "general"}
+
+Important: tailor the persona specifically to this type and domain. No em dashes.
 
 Return ONLY valid JSON, no markdown, no extra text:
 {
   "name": "Full realistic name",
   "age": "Age as number",
-  "occupation": "Job title",
+  "occupation": "Job title or role appropriate for the persona type",
   "location": "City, Country",
   "bio": "2 sentence biography. Specific and human. No em dashes.",
   "goals": ["goal 1", "goal 2", "goal 3"],
@@ -227,6 +312,8 @@ Return ONLY valid JSON, no markdown, no extra text:
         localStorage.setItem("persona-builder-state", JSON.stringify({
           persona: parsed,
           selectedDomain,
+          selectedPersonaType,
+          selectedAvatar,
           chatMessages: [],
         }));
       } catch { /* ignore */ }
@@ -245,8 +332,7 @@ Return ONLY valid JSON, no markdown, no extra text:
       setChatMessages([intro]);
       try {
         localStorage.setItem("persona-builder-state", JSON.stringify({
-          persona,
-          selectedDomain,
+          persona, selectedDomain, selectedPersonaType, selectedAvatar,
           chatMessages: [intro],
         }));
       } catch { /* ignore */ }
@@ -262,7 +348,7 @@ Return ONLY valid JSON, no markdown, no extra text:
     setChatMessages(newMessages);
     setChatInput("");
 
-    const systemPrompt = `You are ${persona.name}, a ${persona.age} year old ${persona.occupation} from ${persona.location}.
+    const systemPrompt = `You are ${persona.name}, a ${persona.age} year old ${persona.occupation}.
 
 Bio: ${persona.bio}
 Goals: ${persona.goals.join(", ")}
@@ -280,8 +366,7 @@ Respond as this real person. First person only. Stay in character. Never mention
     setChatMessages(finalMessages);
     try {
       localStorage.setItem("persona-builder-state", JSON.stringify({
-        persona,
-        selectedDomain,
+        persona, selectedDomain, selectedPersonaType, selectedAvatar,
         chatMessages: finalMessages,
       }));
     } catch { /* ignore */ }
@@ -317,6 +402,13 @@ Respond as this real person. First person only. Stay in character. Never mention
     setPersona(null);
     setChatMessages([]);
     setSelectedDomain(null);
+    setSelectedPersonaType(null);
+    setSelectedAvatar(null);
+  };
+
+  const getAvatarDisplay = () => {
+    if (!selectedAvatar) return null;
+    return avatars.find(a => a.id === selectedAvatar)?.emoji || null;
   };
 
   return (
@@ -324,11 +416,8 @@ Respond as this real person. First person only. Stay in character. Never mention
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-          --black: #0d0d0d;
-          --white: #f5f4f0;
-          --accent: #c8f04a;
-          --gray: #888880;
-          --light-gray: #e8e7e2;
+          --black: #0d0d0d; --white: #f5f4f0; --accent: #c8f04a;
+          --gray: #888880; --light-gray: #e8e7e2;
           --font-display: 'Bebas Neue', sans-serif;
           --font-serif: 'DM Serif Display', serif;
           --font-body: 'DM Sans', sans-serif;
@@ -338,8 +427,7 @@ Respond as this real person. First person only. Stay in character. Never mention
         .tool-nav {
           position: fixed; top: 0; left: 0; right: 0; z-index: 100;
           display: flex; align-items: center; justify-content: space-between;
-          padding: 1.25rem 3rem;
-          background: var(--white);
+          padding: 1.25rem 3rem; background: var(--white);
           border-bottom: 1px solid var(--light-gray);
         }
         .tool-nav-logo {
@@ -368,9 +456,7 @@ Respond as this real person. First person only. Stay in character. Never mention
           font-size: clamp(1.8rem, 4vw, 2.8rem);
           line-height: 1.15; margin-bottom: 0.75rem;
         }
-        .phase-sub {
-          font-size: 0.95rem; color: var(--gray); margin-bottom: 3rem; line-height: 1.6;
-        }
+        .phase-sub { font-size: 0.95rem; color: var(--gray); margin-bottom: 3rem; line-height: 1.6; }
 
         .domain-grid {
           display: grid; grid-template-columns: repeat(4, 1fr);
@@ -378,18 +464,56 @@ Respond as this real person. First person only. Stay in character. Never mention
         }
         .domain-card {
           background: var(--white); padding: 1.75rem 1.5rem;
-          cursor: pointer; transition: background 0.2s;
-          border: none; text-align: left;
+          cursor: pointer; transition: background 0.2s; border: none; text-align: left;
         }
         .domain-card:hover { background: var(--black); }
-        .domain-card:hover .domain-label,
-        .domain-card:hover .domain-desc { color: var(--white); }
+        .domain-card:hover .domain-label, .domain-card:hover .domain-desc { color: var(--white); }
         .domain-label {
           font-family: var(--font-display); font-size: 1.4rem;
-          letter-spacing: 0.03em; color: var(--black);
-          margin-bottom: 0.4rem; transition: color 0.2s;
+          letter-spacing: 0.03em; color: var(--black); margin-bottom: 0.4rem; transition: color 0.2s;
         }
         .domain-desc { font-size: 0.78rem; color: var(--gray); transition: color 0.2s; line-height: 1.4; }
+
+        .type-grid {
+          display: grid; grid-template-columns: repeat(2, 1fr);
+          gap: 1px; background: var(--light-gray); border: 1px solid var(--light-gray);
+          margin-bottom: 2rem;
+        }
+        .type-card {
+          background: var(--white); padding: 1.25rem 1.5rem;
+          cursor: pointer; transition: background 0.2s; border: none; text-align: left;
+          display: flex; flex-direction: column; gap: 0.25rem;
+        }
+        .type-card:hover { background: var(--black); }
+        .type-card:hover .type-label, .type-card:hover .type-desc { color: var(--white); }
+        .type-label {
+          font-size: 0.9rem; font-weight: 500; color: var(--black); transition: color 0.2s;
+        }
+        .type-desc { font-size: 0.75rem; color: var(--gray); transition: color 0.2s; line-height: 1.4; }
+
+        .breadcrumb {
+          font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+          color: var(--gray); margin-bottom: 2rem;
+          display: flex; align-items: center; gap: 0.5rem;
+        }
+        .breadcrumb span { color: var(--black); }
+
+        .avatar-section { margin-bottom: 2.5rem; }
+        .avatar-section-title {
+          font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+          color: var(--gray); margin-bottom: 1rem;
+        }
+        .avatar-grid {
+          display: flex; flex-wrap: wrap; gap: 0.5rem;
+        }
+        .avatar-btn {
+          width: 48px; height: 48px; border-radius: 50%;
+          border: 2px solid var(--light-gray); background: var(--white);
+          cursor: pointer; font-size: 1.5rem; display: flex;
+          align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .avatar-btn:hover { border-color: var(--black); }
+        .avatar-btn.selected { border-color: var(--accent); background: #f0f9d0; }
 
         .progress-bar {
           height: 2px; background: var(--light-gray);
@@ -433,8 +557,8 @@ Respond as this real person. First person only. Stay in character. Never mention
         .btn-ghost {
           display: inline-block; background: transparent; color: var(--gray);
           font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
-          padding: 0.9rem 1.5rem; border: none;
-          cursor: pointer; margin-top: 1rem; margin-left: 0.5rem;
+          padding: 0.9rem 1.5rem; border: none; cursor: pointer;
+          margin-top: 1rem; margin-left: 0.5rem;
           font-family: var(--font-body); transition: color 0.2s;
         }
         .btn-ghost:hover { color: var(--black); }
@@ -468,19 +592,29 @@ Respond as this real person. First person only. Stay in character. Never mention
 
         .persona-card { border: 1px solid var(--light-gray); margin-bottom: 2rem; }
         .persona-header {
-          background: var(--black); color: var(--white);
-          padding: 2.5rem 3rem;
+          background: var(--black); color: var(--white); padding: 2.5rem 3rem;
           display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+        }
+        .persona-header-left { display: flex; align-items: flex-start; gap: 1.25rem; }
+        .persona-avatar-display {
+          font-size: 3rem; line-height: 1; flex-shrink: 0;
+          width: 64px; height: 64px; background: #1a1a18;
+          border-radius: 50%; display: flex; align-items: center; justify-content: center;
         }
         .persona-name {
           font-family: var(--font-display); font-size: 2.5rem;
           letter-spacing: 0.03em; margin-bottom: 0.4rem;
         }
         .persona-meta { font-size: 0.82rem; color: #888; }
+        .persona-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; }
         .persona-badge {
           background: var(--accent); color: var(--black);
           font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
           padding: 0.35rem 0.75rem; font-weight: 500; white-space: nowrap; flex-shrink: 0;
+        }
+        .persona-badge.secondary {
+          background: transparent; color: #888;
+          border: 1px solid #333;
         }
         .persona-quote {
           padding: 1.5rem 3rem; border-bottom: 1px solid var(--light-gray);
@@ -490,8 +624,7 @@ Respond as this real person. First person only. Stay in character. Never mention
         .persona-body { padding: 2rem 3rem; }
         .persona-bio { font-size: 0.9rem; line-height: 1.75; color: #555; margin-bottom: 2rem; }
         .persona-cols {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 3rem;
-          margin-bottom: 2rem;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 3rem; margin-bottom: 2rem;
         }
         .persona-group-title {
           font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase;
@@ -546,6 +679,7 @@ Respond as this real person. First person only. Stay in character. Never mention
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         .chat-bar-name { font-size: 0.85rem; font-weight: 500; }
         .chat-bar-sub { font-size: 0.72rem; color: #888; margin-left: auto; }
+        .chat-bar-avatar { font-size: 1.2rem; }
 
         .chat-messages {
           border: 1px solid var(--light-gray); border-top: none;
@@ -561,9 +695,19 @@ Respond as this real person. First person only. Stay in character. Never mention
         .chat-msg.user .chat-bubble { background: var(--black); color: var(--white); }
         .chat-msg.assistant .chat-bubble { background: var(--light-gray); color: var(--black); }
 
-        .chat-input-row {
-          display: flex; border: 1px solid var(--light-gray); border-top: none;
+        .typing-indicator {
+          align-self: flex-start; background: var(--light-gray);
+          padding: 0.75rem 1rem; display: flex; gap: 4px; align-items: center;
         }
+        .typing-dot {
+          width: 5px; height: 5px; background: var(--gray);
+          border-radius: 50%; animation: typingBounce 1.2s ease-in-out infinite;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+        .chat-input-row { display: flex; border: 1px solid var(--light-gray); border-top: none; }
         .chat-input {
           flex: 1; padding: 0.9rem 1.25rem;
           font-family: var(--font-body); font-size: 0.875rem;
@@ -571,8 +715,7 @@ Respond as this real person. First person only. Stay in character. Never mention
           outline: none; resize: none; min-height: 0;
         }
         .chat-send {
-          background: var(--black); color: var(--white);
-          border: none; padding: 0.9rem 1.5rem;
+          background: var(--black); color: var(--white); border: none; padding: 0.9rem 1.5rem;
           font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
           cursor: pointer; font-family: var(--font-body); transition: background 0.2s;
         }
@@ -601,15 +744,11 @@ Respond as this real person. First person only. Stay in character. Never mention
           font-family: var(--font-serif); font-size: 1.4rem;
           margin-bottom: 0.5rem; color: var(--black);
         }
-        .export-modal-sub {
-          font-size: 0.85rem; color: var(--gray); margin-bottom: 1.5rem; line-height: 1.5;
-        }
+        .export-modal-sub { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.5rem; line-height: 1.5; }
         .export-input {
-          width: 100%; padding: 0.85rem 1rem;
-          font-family: var(--font-body); font-size: 0.9rem;
-          border: 1px solid var(--light-gray); background: var(--white);
-          color: var(--black); outline: none; border-radius: 2px;
-          transition: border-color 0.2s; margin-bottom: 1rem;
+          width: 100%; padding: 0.85rem 1rem; font-family: var(--font-body); font-size: 0.9rem;
+          border: 1px solid var(--light-gray); background: var(--white); color: var(--black);
+          outline: none; border-radius: 2px; transition: border-color 0.2s; margin-bottom: 1rem;
         }
         .export-input:focus { border-color: var(--black); }
         .export-success { text-align: center; padding: 1rem 0; }
@@ -622,6 +761,7 @@ Respond as this real person. First person only. Stay in character. Never mention
         @media (max-width: 768px) {
           .tool-wrap { padding: 6rem 1.5rem 3rem; }
           .domain-grid { grid-template-columns: repeat(2, 1fr); }
+          .type-grid { grid-template-columns: 1fr; }
           .persona-cols { grid-template-columns: 1fr; }
           .persona-header { flex-direction: column; }
           .tool-nav { padding: 1rem 1.5rem; }
@@ -639,6 +779,7 @@ Respond as this real person. First person only. Stay in character. Never mention
 
       <div className="tool-wrap">
 
+        {/* DOMAIN */}
         {phase === "domain" && (
           <>
             <div className="phase-label">AI Persona Builder</div>
@@ -646,7 +787,7 @@ Respond as this real person. First person only. Stay in character. Never mention
             <p className="phase-sub">Pick your domain. The questions adapt to your context and go deeper based on what you share.</p>
             <div className="domain-grid">
               {domains.map(d => (
-                <button key={d.id} className="domain-card" onClick={() => startQuestionnaire(d)}>
+                <button key={d.id} className="domain-card" onClick={() => selectDomain(d)}>
                   <div className="domain-label">{d.label}</div>
                   <div className="domain-desc">{d.description}</div>
                 </button>
@@ -655,10 +796,54 @@ Respond as this real person. First person only. Stay in character. Never mention
           </>
         )}
 
+        {/* PERSONA TYPE */}
+        {phase === "personatype" && (
+          <>
+            <div className="breadcrumb">
+              <span>{selectedDomain?.label}</span> / Persona Type
+            </div>
+            <div className="phase-label">Step 2 of 2</div>
+            <h1 className="phase-title">Who is this persona?</h1>
+            <p className="phase-sub">Choose the type of person you are designing for. This shapes the questions.</p>
+
+            <div className="avatar-section">
+              <div className="avatar-section-title">Choose an avatar (optional)</div>
+              <div className="avatar-grid">
+                {avatars.map(a => (
+                  <button
+                    key={a.id}
+                    className={`avatar-btn ${selectedAvatar === a.id ? "selected" : ""}`}
+                    onClick={() => setSelectedAvatar(selectedAvatar === a.id ? null : a.id)}
+                    title={a.label}
+                  >
+                    {a.emoji}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="type-grid">
+              {personaTypes.map(t => (
+                <button key={t.id} className="type-card" onClick={() => startQuestionnaire(t)}>
+                  <div className="type-label">{t.label}</div>
+                  <div className="type-desc">{t.description}</div>
+                </button>
+              ))}
+            </div>
+            <button className="btn-ghost" style={{ marginTop: 0, paddingLeft: 0 }} onClick={() => setPhase("domain")}>
+              Back to domains
+            </button>
+          </>
+        )}
+
+        {/* QUESTIONNAIRE */}
         {phase === "questionnaire" && (
           <>
+            <div className="breadcrumb">
+              <span>{selectedDomain?.label}</span> / <span>{selectedPersonaType?.label}</span> / Questions
+            </div>
             <div className="phase-label">
-              {selectedDomain?.label} · Question {currentQ + 1} of {questions.length}
+              Question {currentQ + 1} of {questions.length}
             </div>
             <div className="progress-bar">
               <div className="progress-fill" style={{ width: `${(currentQ / questions.length) * 100}%` }} />
@@ -699,6 +884,7 @@ Respond as this real person. First person only. Stay in character. Never mention
           </>
         )}
 
+        {/* GENERATING */}
         {phase === "generating" && (
           <div className="generating-wrap">
             <div className="generating-icon">EG</div>
@@ -709,6 +895,7 @@ Respond as this real person. First person only. Stay in character. Never mention
           </div>
         )}
 
+        {/* PERSONA */}
         {phase === "persona" && persona && (
           <>
             <div className="saved-banner">
@@ -719,11 +906,21 @@ Respond as this real person. First person only. Stay in character. Never mention
             <h2 className="phase-title" style={{ marginBottom: "2rem" }}>Meet {persona.name}.</h2>
             <div className="persona-card">
               <div className="persona-header">
-                <div>
-                  <div className="persona-name">{persona.name}</div>
-                  <div className="persona-meta">{persona.age} · {persona.occupation} · {persona.location}</div>
+                <div className="persona-header-left">
+                  {getAvatarDisplay() && (
+                    <div className="persona-avatar-display">{getAvatarDisplay()}</div>
+                  )}
+                  <div>
+                    <div className="persona-name">{persona.name}</div>
+                    <div className="persona-meta">{persona.age} · {persona.occupation} · {persona.location}</div>
+                  </div>
                 </div>
-                <div className="persona-badge">{selectedDomain?.label}</div>
+                <div className="persona-badges">
+                  <div className="persona-badge">{selectedDomain?.label}</div>
+                  {selectedPersonaType && (
+                    <div className="persona-badge secondary">{selectedPersonaType.label}</div>
+                  )}
+                </div>
               </div>
               <div className="persona-quote">"{persona.quote}"</div>
               <div className="persona-body">
@@ -778,6 +975,7 @@ Respond as this real person. First person only. Stay in character. Never mention
           </>
         )}
 
+        {/* CHAT */}
         {phase === "chat" && persona && (
           <>
             <div className="phase-label">Persona Interview</div>
@@ -786,6 +984,9 @@ Respond as this real person. First person only. Stay in character. Never mention
             </h2>
             <div className="chat-wrap">
               <div className="chat-bar">
+                {getAvatarDisplay() && (
+                  <div className="chat-bar-avatar">{getAvatarDisplay()}</div>
+                )}
                 <div className="chat-dot" />
                 <div className="chat-bar-name">{persona.name}</div>
                 <div className="chat-bar-sub">{persona.occupation} · {persona.location}</div>
@@ -793,16 +994,15 @@ Respond as this real person. First person only. Stay in character. Never mention
               <div className="chat-messages">
                 {chatMessages.map((m, i) => (
                   <div key={i} className={`chat-msg ${m.role}`}>
-                    <div className="chat-sender">
-                      {m.role === "user" ? "You" : persona.name}
-                    </div>
+                    <div className="chat-sender">{m.role === "user" ? "You" : persona.name}</div>
                     <div className="chat-bubble">{m.content}</div>
                   </div>
                 ))}
                 {loading && (
-                  <div className="chat-msg assistant">
-                    <div className="chat-sender">{persona.name}</div>
-                    <div className="chat-bubble" style={{ color: "var(--gray)" }}>...</div>
+                  <div className="typing-indicator">
+                    <div className="typing-dot" />
+                    <div className="typing-dot" />
+                    <div className="typing-dot" />
                   </div>
                 )}
               </div>
@@ -814,10 +1014,7 @@ Respond as this real person. First person only. Stay in character. Never mention
                   placeholder="Ask anything..."
                   rows={1}
                   onKeyDown={e => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      sendChat();
-                    }
+                    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); }
                   }}
                 />
                 <button className="chat-send" onClick={sendChat} disabled={loading || !chatInput.trim()}>
@@ -836,6 +1033,7 @@ Respond as this real person. First person only. Stay in character. Never mention
           </>
         )}
 
+        {/* EXPORT MODAL */}
         {showExport && (
           <div className="export-modal-bg" onClick={() => setShowExport(false)}>
             <div className="export-modal" onClick={e => e.stopPropagation()}>
@@ -866,9 +1064,7 @@ Respond as this real person. First person only. Stay in character. Never mention
                 <div className="export-success">
                   <span className="export-success-icon">OK</span>
                   <div className="export-modal-title">Sent.</div>
-                  <div className="export-success-text">
-                    Check your inbox for {exportEmail}.
-                  </div>
+                  <div className="export-success-text">Check your inbox for {exportEmail}.</div>
                   <button className="btn-ghost" style={{ marginTop: "1rem" }} onClick={() => setShowExport(false)}>
                     Close
                   </button>
