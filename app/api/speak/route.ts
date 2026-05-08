@@ -18,17 +18,20 @@ export async function POST(req: NextRequest) {
         text,
         model_id: "eleven_multilingual_v2",
         voice_settings: {
-          stability: 0.5,
+          stability: 0.6,
           similarity_boost: 0.75,
-          style: 0.3,
+          style: 0.2,
           use_speaker_boost: true,
+          speed: 0.85,
         },
       }),
     }
   );
 
   if (!response.ok) {
-    return NextResponse.json({ error: "TTS failed" }, { status: 500 });
+    const errorText = await response.text();
+    console.log("ElevenLabs error:", errorText);
+    return NextResponse.json({ error: errorText }, { status: 500 });
   }
 
   const audioBuffer = await response.arrayBuffer();

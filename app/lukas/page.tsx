@@ -61,8 +61,10 @@ export default function Lukas() {
   const [speaking, setSpeaking] = useState(false);
   const [muted, setMuted] = useState(false);
   const [started, setStarted] = useState(false);
+  const [listening, setListening] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const recognitionRef = useRef<unknown>(null);
 
   useEffect(() => {
     try {
@@ -92,7 +94,6 @@ export default function Lukas() {
   const speak = async (text: string) => {
     if (muted) return;
 
-    // Stop any currently playing audio
     if (currentAudioRef.current) {
       currentAudioRef.current.pause();
       currentAudioRef.current = null;
@@ -111,6 +112,12 @@ export default function Lukas() {
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
       currentAudioRef.current = audio;
+
+      await new Promise<void>((resolve) => {
+        audio.oncanplaythrough = () => resolve();
+        audio.onerror = () => resolve();
+        audio.load();
+      });
 
       setSpeaking(true);
       audio.onended = () => {
@@ -135,6 +142,57 @@ export default function Lukas() {
       currentAudioRef.current = null;
     }
     setSpeaking(false);
+  };
+
+  const startListening = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognitionAPI) {
+      alert("Bitte Chrome verwenden.");
+      return;
+    }
+
+    if (listening) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (recognitionRef.current as any)?.stop();
+      setListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognitionAPI();
+    recognition.lang = "de-DE";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+      console.log("Mic started");
+      setListening(true);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onresult = (event: any) => {
+      console.log("Got result", event);
+      let transcript = "";
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      console.log("Transcript:", transcript);
+      setInput(transcript);
+    };
+
+    recognition.onerror = (e: unknown) => {
+      console.log("Mic error", e);
+      setListening(false);
+    };
+
+    recognition.onend = () => {
+      console.log("Mic ended");
+      setListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
   };
 
   const startConversation = () => {
@@ -346,6 +404,18 @@ export default function Lukas() {
           padding: 1.25rem 2.5rem; border-top: 1px solid var(--light-gray);
           display: flex; gap: 0; flex-shrink: 0;
         }
+        .mic-btn {
+          background: var(--white); color: var(--gray);
+          border: 1px solid var(--light-gray); border-right: none;
+          padding: 0 1rem; cursor: pointer; transition: all 0.2s;
+          font-size: 1rem; flex-shrink: 0; display: flex; align-items: center;
+        }
+        .mic-btn:hover { color: var(--black); border-color: var(--black); }
+        .mic-btn.listening {
+          background: #fff0f0; color: #cc0000; border-color: #cc0000;
+          animation: micPulse 1s ease-in-out infinite;
+        }
+        @keyframes micPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         .chat-input {
           flex: 1; padding: 0.85rem 1.25rem; font-family: var(--font-body); font-size: 0.875rem;
           border: 1px solid var(--light-gray); border-right: none;
@@ -379,7 +449,6 @@ export default function Lukas() {
 
       <div className="lukas-wrap">
 
-        {/* LEFT */}
         <div className="lukas-left">
           <div className="lukas-photo">
             <Image
@@ -410,7 +479,6 @@ export default function Lukas() {
           </div>
         </div>
 
-        {/* RIGHT */}
         <div className="lukas-right">
           <div className="lukas-header">
             <div>
@@ -445,8 +513,8 @@ export default function Lukas() {
               <div className="lukas-start-title">Lern Lukas kennen.</div>
               <div className="lukas-start-sub">
                 Lukas ist 23, studiert Wirtschaftsinformatik an der TH Wildau und
-                kommt aus Neubrandenburg. Er ist faehig und motiviert, aber dem
-                die richtigen Strukturen fehlen. Frag ihn auf Deutsch oder Englisch.
+                kommt aus Neubrandenburg. Er ist faehig und motiviert, aber ihm
+                fehlen die richtigen Strukturen. Frag ihn auf Deutsch oder Englisch.
               </div>
               <button className="start-btn" onClick={startConversation}>
                 Interview starten
@@ -480,11 +548,18 @@ export default function Lukas() {
                 <div ref={chatEndRef} />
               </div>
               <div className="chat-input-area">
+                <button
+                  className={`mic-btn ${listening ? "listening" : ""}`}
+                  onClick={startListening}
+                  title={listening ? "Aufnahme stoppen" : "Spracheingabe starten"}
+                >
+                  {listening ? "⏹" : "🎤"}
+                </button>
                 <textarea
                   className="chat-input"
                   value={input}
                   onChange={e => setInput(e.target.value)}
-                  placeholder="Frag Lukas etwas..."
+                  placeholder={listening ? "Hoere zu..." : "Frag Lukas etwas..."}
                   rows={1}
                   onKeyDown={e => {
                     if (e.key === "Enter" && !e.shiftKey) {
