@@ -10,42 +10,47 @@ type Message = {
 
 const LUKAS_SYSTEM_PROMPT = `Du bist Lukas, 23 Jahre alt, Student der Wirtschaftsinformatik im 5. Semester an der TH Wildau.
 
+KERNCHARAKTER:
+Lukas ist kein fauler Student. Er ist faehig, willig und bereit, Einsatz zu zeigen. Was ihm fehlt, sind die richtigen Strukturen, Raeume und Unterstuetzung. Er scheitert nicht am Willen, sondern an fehlender Infrastruktur und einem System, das ihn nicht wirklich abgeholt hat.
+
 BIOGRAFIE:
-Du kommst aus Neubrandenburg in Mecklenburg-Vorpommern. Du hast dein Abitur mit 2,4 abgeschlossen. Wirtschaftsinformatik hast du gewählt weil es sich nach einem vernünftigen Kompromiss anfühlte. Reine Informatik war dir zu trocken, BWL zu abstrakt. Ein konkretes Berufsbild hast du heute immer noch nicht so richtig. Du wohnst in einer Dreier-WG in Campusnähe mit Jonas (Maschinenbau, sehr strukturiert) und Mia (Soziale Arbeit, meistens gut gelaunt). Du arbeitest nebenbei bei Media Markt, weil das Geld irgendwo herkommen muss. Spaß macht es dir nicht.
+Kommt aus Neubrandenburg, Mecklenburg-Vorpommern. Abitur 2,4. Wirtschaftsinformatik als Kompromiss gewaehlt, weil es nach Praxis und Zukunft klang. Wohnt in einer Dreier-WG in Wildau mit Jonas (Maschinenbau, strukturiert) und Mia (Soziale Arbeit, gutgelaunt). Arbeitet nebenbei bei Media Markt. Engster Kontakt an der Uni ist Ben.
 
-PERSÖNLICHKEIT:
-Pragmatiker. Hauptsache es funktioniert irgendwie, muss nicht perfekt sein. Teamplayer solange das Team dich mitzieht. Du hältst dich selbst für durchschnittlich begabt und grundsätzlich fähig, zweifelst aber regelmäßig daran ob du wirklich am richtigen Ort bist. Du gehst nicht zur Sprechstunde, das fühlt sich nach Eingestehen einer Niederlage an. Du fragst lieber Ben oder schaust auf YouTube.
+WAS LUKAS SICH WUENSCHT:
+- Er will endlich ein Projekt wirklich durchziehen und verstehen, was er dabei eigentlich tut
+- Er moechte sehen wie das Gelernte in der Praxis angewendet wird
+- Er wuenscht sich ein Umfeld in dem er Fragen stellen kann ohne sich zu blamieren
+- Er moechte Anschluss finden, in Gruppen arbeiten, vom Team-Effekt profitieren
+- Er will am Ende des Studiums wissen was er kann und wohin er will
+- Er moechte Raeume an der TH die er kennt, buchen kann und als seine eigenen empfindet
+- Er will einen Studiengang der ihn Schritt fuer Schritt entwickelt
+- Er moechte dass Fehler als Lernchance begriffen werden
+- Er sucht Praxisbezug der Lernen sinnvoll macht
 
-ALLTAG UND PAIN POINTS:
-Dein Tag beginnt oft chaotisch. Du wachst auf, schaust sofort aufs Handy, bist wieder zu spät. Du öffnest die Unidos-App und der Stundenplan ist wieder veraltet. Du musst fünf Moodle-Kurse durchklicken um herauszufinden wo deine Vorlesung stattfindet. Du findest den richtigen Raum meistens indem du deinen Kommilitonen Ben fragst, nicht durch verlässliche Planung. Abgaben machst du meistens in der Nacht davor, obwohl du dir jedes Mal vornimmst früher anzufangen. Du prokrastinierst stark.
+WAS LUKAS FRUSTRIERT:
+- Die digitalen Systeme der TH sind fragmentiert: Unidos, Moodle, Pruefungsportal, Email alle getrennt
+- Er verliert den Ueberblick weil Informationen verstreut sind
+- Prokrastination entsteht bei ihm aus fehlender Struktur, nicht aus Faulheit
+- Er lernt mit dem Gefuehl nur fuer Pruefungen zu lernen
+- Er findet keine Lerngruppen obwohl er sie sich wuenscht
 
-DIGITALISIERUNG AN DER UNI:
-Du bist mit dem Smartphone aufgewachsen und kannst alle Tools bedienen, aber du nutzt sie nicht strategisch. Moodle ist für dich ein Ort den du aufsucht wenn du musst. Die Unidos-App öffnest du morgens mit dem stillen Misstrauen dass der Stundenplan wieder nicht stimmt. Was dich wirklich frustriert ist die Fragmentierung: zu viele Systeme die nicht miteinander reden, zu viele Orte an denen Wichtiges versteckt sein könnte.
+PERSOENLICHKEIT:
+Pragmatiker. Teamplayer wenn das Team ihn einbindet. Spielt Videospiele strategisch. Hoert viel Musik, Kopfhoerer als Schutzschild. WG-Filmabend ist sein Anker.
 
-ZIELE:
-Du willst endlich mal ein Projekt richtig durchziehen. Du möchtest im Lebenslauf gut aussehen, am liebsten mit irgendetwas Digitalem. Dein größtes Ziel ist nach dem Studium nicht völlig planlos dazustehen. Wenn du ehrlich bist, hättest du gern die Anerkennung mal wirklich kompetent zu wirken.
-
-TYPISCHE ZITATE DIE DU SAGST:
+TYPISCHE ZITATE:
 "Halb wach, was steht heute eigentlich an?"
-"Hoffentlich hab ich nichts verpasst."
-"Ich lerne nur für die Prüfung, nicht für mich."
+"Ich will das mal wirklich verstehen, nicht nur fuer die Pruefung."
+"Ben, weisst du wo der Raum ist?"
 "Mach ich einfach morgen."
-"Nächstes Mal fang ich früher an."
-"Ben, weißt du wo der Raum ist?"
-"Irgendwie fühlt sich das alles mehr nach Improvisieren an als nach Studieren."
-"Weiß eigentlich auch nicht genau."
-
-WAS LUKAS BRAUCHT:
-Kein Student der faul ist. Ein Student dem die richtigen Strukturen fehlen. Er ahnt das selbst, spricht es aber nicht aus.
+"Irgendwie fuehlt sich das alles mehr nach Improvisieren an als nach Studieren."
 
 WICHTIGE REGELN:
-- Antworte IMMER auf Deutsch, egal in welcher Sprache die Person schreibt.
-- Sprich natürlich und umgangssprachlich, wie ein echter 23-jähriger Student.
-- Erste Person. Niemals erwähnen dass du eine KI oder Persona bist.
-- Halte Antworten unter 100 Wörtern.
-- Keine Gedankenstriche.
-- Sei spezifisch und menschlich, nicht generisch.
-- Zeige manchmal Unsicherheit, Prokrastination, oder leichten Frust, das ist authentisch für Lukas.`;
+- Antworte IMMER auf Deutsch, egal in welcher Sprache die Person schreibt
+- Sprich natuerlich und umgangssprachlich wie ein echter 23-jaehriger Student
+- Erste Person, niemals erwaehnen dass du KI oder Persona bist
+- Halte Antworten unter 100 Woertern
+- Keine Gedankenstriche
+- Zeige Lukas als jemanden der FAEHIG ist und WILL aber dem die Strukturen fehlen`;
 
 const STORAGE_KEY = "lukas-chat-history";
 
@@ -57,7 +62,7 @@ export default function Lukas() {
   const [muted, setMuted] = useState(false);
   const [started, setStarted] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
-  const synthRef = useRef<SpeechSynthesis | null>(null);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     try {
@@ -81,55 +86,55 @@ export default function Lukas() {
   }, [messages]);
 
   useEffect(() => {
-    synthRef.current = window.speechSynthesis;
-    window.speechSynthesis.getVoices();
-    window.speechSynthesis.onvoiceschanged = () => {
-      window.speechSynthesis.getVoices();
-    };
-    return () => { synthRef.current?.cancel(); };
-  }, []);
-
-  useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const speak = (text: string) => {
-    if (muted || !synthRef.current) return;
-    synthRef.current.cancel();
+  const speak = async (text: string) => {
+    if (muted) return;
 
-    const doSpeak = () => {
-      const utterance = new SpeechSynthesisUtterance(text);
-      const voices = window.speechSynthesis.getVoices();
-      const voice =
-        voices.find(v => v.lang === "de-DE" && v.name.includes("Anna")) ||
-        voices.find(v => v.lang === "de-DE" && v.name.includes("Stefan")) ||
-        voices.find(v => v.lang === "de-DE" && v.name.includes("Yannick")) ||
-        voices.find(v => v.lang === "de-DE" && v.name.includes("Markus")) ||
-        voices.find(v => v.lang === "de-DE") ||
-        voices.find(v => v.lang.startsWith("de"));
-
-      if (voice) {
-        utterance.voice = voice;
-        utterance.lang = voice.lang;
-      } else {
-        utterance.lang = "de-DE";
-      }
-
-      utterance.rate = 0.95;
-      utterance.pitch = 0.88;
-      utterance.volume = 1;
-      utterance.onstart = () => setSpeaking(true);
-      utterance.onend = () => setSpeaking(false);
-      utterance.onerror = () => setSpeaking(false);
-      synthRef.current!.speak(utterance);
-    };
-
-    const voices = window.speechSynthesis.getVoices();
-    if (voices.length === 0) {
-      window.speechSynthesis.onvoiceschanged = () => doSpeak();
-    } else {
-      doSpeak();
+    // Stop any currently playing audio
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
     }
+
+    try {
+      const res = await fetch("/api/speak", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!res.ok) throw new Error("TTS failed");
+
+      const audioBlob = await res.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      currentAudioRef.current = audio;
+
+      setSpeaking(true);
+      audio.onended = () => {
+        setSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+        currentAudioRef.current = null;
+      };
+      audio.onerror = () => {
+        setSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+        currentAudioRef.current = null;
+      };
+      audio.play();
+    } catch {
+      setSpeaking(false);
+    }
+  };
+
+  const stopSpeaking = () => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
+    setSpeaking(false);
   };
 
   const startConversation = () => {
@@ -166,9 +171,9 @@ export default function Lukas() {
 
   const clearChat = () => {
     try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+    stopSpeaking();
     setMessages([]);
     setStarted(false);
-    synthRef.current?.cancel();
   };
 
   return (
@@ -176,11 +181,8 @@ export default function Lukas() {
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-          --black: #0d0d0d;
-          --white: #f5f4f0;
-          --accent: #c8f04a;
-          --gray: #888880;
-          --light-gray: #e8e7e2;
+          --black: #0d0d0d; --white: #f5f4f0; --accent: #c8f04a;
+          --gray: #888880; --light-gray: #e8e7e2;
           --font-display: 'Bebas Neue', sans-serif;
           --font-serif: 'DM Serif Display', serif;
           --font-body: 'DM Sans', sans-serif;
@@ -190,8 +192,7 @@ export default function Lukas() {
         .lukas-nav {
           position: fixed; top: 0; left: 0; right: 0; z-index: 100;
           display: flex; align-items: center; justify-content: space-between;
-          padding: 1.25rem 3rem;
-          background: var(--white);
+          padding: 1.25rem 3rem; background: var(--white);
           border-bottom: 1px solid var(--light-gray);
         }
         .lukas-nav-logo {
@@ -211,10 +212,8 @@ export default function Lukas() {
         }
 
         .lukas-left {
-          background: var(--black);
-          position: sticky; top: 72px;
-          height: calc(100vh - 72px);
-          display: flex; flex-direction: column; overflow: hidden;
+          background: var(--black); position: sticky; top: 72px;
+          height: calc(100vh - 72px); display: flex; flex-direction: column; overflow: hidden;
         }
         .lukas-photo { flex: 1; position: relative; overflow: hidden; background: #111; }
         .lukas-info { padding: 1.75rem 2rem; border-top: 1px solid #1e1e1c; flex-shrink: 0; }
@@ -234,7 +233,8 @@ export default function Lukas() {
         }
         .lukas-status-dot {
           width: 6px; height: 6px; border-radius: 50%;
-          background: var(--accent); animation: blink 2s ease-in-out infinite; flex-shrink: 0;
+          background: var(--accent); flex-shrink: 0;
+          animation: blink 2s ease-in-out infinite;
         }
         .lukas-status-dot.speaking { animation: pulse-fast 0.5s ease-in-out infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
@@ -245,13 +245,11 @@ export default function Lukas() {
 
         .lukas-right {
           display: flex; flex-direction: column;
-          height: calc(100vh - 72px);
-          position: sticky; top: 72px; overflow: hidden;
+          height: calc(100vh - 72px); position: sticky; top: 72px; overflow: hidden;
         }
 
         .lukas-header {
-          padding: 1.25rem 2.5rem;
-          border-bottom: 1px solid var(--light-gray);
+          padding: 1.25rem 2.5rem; border-bottom: 1px solid var(--light-gray);
           display: flex; align-items: flex-start; justify-content: space-between;
           gap: 1rem; flex-shrink: 0;
         }
@@ -265,14 +263,14 @@ export default function Lukas() {
         .lukas-header-sub strong { color: var(--black); font-weight: 500; }
 
         .header-actions { display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0; }
-        .mute-btn, .clear-btn {
+        .action-btn {
           font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
           color: var(--gray); background: none; border: 1px solid var(--light-gray);
           padding: 0.4rem 0.75rem; cursor: pointer; font-family: var(--font-body);
           transition: all 0.2s; white-space: nowrap;
         }
-        .mute-btn:hover, .clear-btn:hover { border-color: var(--black); color: var(--black); }
-        .mute-btn.muted { background: var(--black); color: var(--white); border-color: var(--black); }
+        .action-btn:hover { border-color: var(--black); color: var(--black); }
+        .action-btn.active { background: var(--black); color: var(--white); border-color: var(--black); }
 
         .lukas-start {
           flex: 1; display: flex; flex-direction: column;
@@ -323,7 +321,9 @@ export default function Lukas() {
         .chat-msg { display: flex; flex-direction: column; gap: 0.2rem; max-width: 75%; }
         .chat-msg.user { align-self: flex-end; align-items: flex-end; }
         .chat-msg.assistant { align-self: flex-start; }
-        .chat-sender { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); }
+        .chat-sender {
+          font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray);
+        }
         .chat-bubble { padding: 0.75rem 1rem; font-size: 0.875rem; line-height: 1.65; border-radius: 2px; }
         .chat-msg.user .chat-bubble { background: var(--black); color: var(--white); }
         .chat-msg.assistant .chat-bubble { background: var(--light-gray); color: var(--black); }
@@ -347,18 +347,15 @@ export default function Lukas() {
           display: flex; gap: 0; flex-shrink: 0;
         }
         .chat-input {
-          flex: 1; padding: 0.85rem 1.25rem;
-          font-family: var(--font-body); font-size: 0.875rem;
+          flex: 1; padding: 0.85rem 1.25rem; font-family: var(--font-body); font-size: 0.875rem;
           border: 1px solid var(--light-gray); border-right: none;
           background: var(--white); color: var(--black); outline: none; resize: none;
         }
         .chat-input:focus { border-color: var(--black); }
         .chat-send {
-          background: var(--black); color: var(--white);
-          border: none; padding: 0.85rem 1.5rem;
+          background: var(--black); color: var(--white); border: none; padding: 0.85rem 1.5rem;
           font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
-          cursor: pointer; font-family: var(--font-body); transition: background 0.2s;
-          white-space: nowrap;
+          cursor: pointer; font-family: var(--font-body); transition: background 0.2s; white-space: nowrap;
         }
         .chat-send:hover { background: #333; }
         .chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -381,6 +378,8 @@ export default function Lukas() {
       </nav>
 
       <div className="lukas-wrap">
+
+        {/* LEFT */}
         <div className="lukas-left">
           <div className="lukas-photo">
             <Image
@@ -396,13 +395,13 @@ export default function Lukas() {
             <div className="lukas-name">LUKAS</div>
             <div className="lukas-meta">
               23 · Wirtschaftsinformatik, 5. Semester<br />
-              TH Wildau · Kommt aus Neubrandenburg
+              TH Wildau · Neubrandenburg
             </div>
             <div className="lukas-tags">
               <span className="lukas-tag">Student</span>
               <span className="lukas-tag">TH Wildau</span>
-              <span className="lukas-tag">Prokrastinator</span>
               <span className="lukas-tag">Media Markt</span>
+              <span className="lukas-tag">WG Wildau</span>
             </div>
             <div className="lukas-status">
               <div className={`lukas-status-dot ${speaking ? "speaking" : ""}`} />
@@ -411,25 +410,31 @@ export default function Lukas() {
           </div>
         </div>
 
+        {/* RIGHT */}
         <div className="lukas-right">
           <div className="lukas-header">
             <div>
               <div className="lukas-header-title">Lukas interviewen</div>
               <div className="lukas-header-sub">
-                Persona aus dem Modul Service Design{" "}
-                <strong>entwickelt von Studierenden</strong>{" "}
-                an der TH Wildau. Stell ihm Fragen zur Studierendenperspektive.
+                Research-Persona aus dem Kurs{" "}
+                <strong>Service Design - Wie funktioniert nutzendenzentriertes Gestalten?</strong>{" "}
+                an der TH Wildau.
               </div>
             </div>
             <div className="header-actions">
               <button
-                className={`mute-btn ${muted ? "muted" : ""}`}
-                onClick={() => { setMuted(!muted); if (!muted) synthRef.current?.cancel(); }}
+                className={`action-btn ${muted ? "active" : ""}`}
+                onClick={() => {
+                  if (!muted) stopSpeaking();
+                  setMuted(!muted);
+                }}
               >
                 {muted ? "Ton an" : "Ton aus"}
               </button>
               {started && (
-                <button className="clear-btn" onClick={clearChat}>Neu starten</button>
+                <button className="action-btn" onClick={clearChat}>
+                  Neu starten
+                </button>
               )}
             </div>
           </div>
@@ -440,9 +445,8 @@ export default function Lukas() {
               <div className="lukas-start-title">Lern Lukas kennen.</div>
               <div className="lukas-start-sub">
                 Lukas ist 23, studiert Wirtschaftsinformatik an der TH Wildau und
-                kommt aus Neubrandenburg. Er prokrastiniert, arbeitet nebenbei bei
-                Media Markt und hat meistens das Gefuhl irgendetwas zu verpassen.
-                Frag ihn auf Deutsch oder Englisch.
+                kommt aus Neubrandenburg. Er ist faehig und motiviert, aber dem
+                die richtigen Strukturen fehlen. Frag ihn auf Deutsch oder Englisch.
               </div>
               <button className="start-btn" onClick={startConversation}>
                 Interview starten
@@ -468,7 +472,9 @@ export default function Lukas() {
                 ))}
                 {loading && (
                   <div className="typing-indicator">
-                    <div className="typing-dot" /><div className="typing-dot" /><div className="typing-dot" />
+                    <div className="typing-dot" />
+                    <div className="typing-dot" />
+                    <div className="typing-dot" />
                   </div>
                 )}
                 <div ref={chatEndRef} />
@@ -481,10 +487,17 @@ export default function Lukas() {
                   placeholder="Frag Lukas etwas..."
                   rows={1}
                   onKeyDown={e => {
-                    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      sendMessage();
+                    }
                   }}
                 />
-                <button className="chat-send" onClick={sendMessage} disabled={loading || !input.trim()}>
+                <button
+                  className="chat-send"
+                  onClick={sendMessage}
+                  disabled={loading || !input.trim()}
+                >
                   Senden
                 </button>
               </div>
