@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
-type Phase = "domain" | "personatype" | "questionnaire" | "generating" | "persona" | "chat";
+type Phase = "domain" | "personatype" | "naming" | "questionnaire" | "generating" | "persona" | "chat";
 
 type Domain = {
   id: string;
@@ -47,18 +48,75 @@ const domains: Domain[] = [
   { id: "mobility", label: "Mobility", description: "Transport, logistics, travel" },
 ];
 
-const personaTypes: PersonaType[] = [
-  { id: "user", label: "End User / Customer", description: "The person who uses the product or service directly" },
-  { id: "student", label: "Student", description: "Learner at any level or institution" },
-  { id: "lecturer", label: "Lecturer / Teacher", description: "Educator, instructor or trainer" },
-  { id: "staff_admin", label: "Administrative Staff", description: "Back-office, enrollment, paperwork" },
-  { id: "staff_org", label: "Organisational Staff", description: "Operations, HR, management" },
-  { id: "staff_teaching", label: "Teaching Support Staff", description: "Lab assistants, tutors, teaching aids" },
-  { id: "professional", label: "Professional / Expert", description: "Specialist or practitioner in a field" },
-  { id: "manager", label: "Manager / Decision Maker", description: "Person with authority and budget" },
-  { id: "caregiver", label: "Caregiver / Family Member", description: "Person supporting someone else" },
-  { id: "citizen", label: "Citizen / Community Member", description: "Member of the general public" },
-];
+const domainPersonaTypes: Record<string, PersonaType[]> = {
+  general: [
+    { id: "end_user", label: "End User", description: "Person who uses the product or service directly" },
+    { id: "professional", label: "Professional", description: "Expert or specialist in a field" },
+    { id: "manager", label: "Manager", description: "Person with authority and responsibility" },
+    { id: "new_user", label: "First-time User", description: "Someone encountering this for the first time" },
+    { id: "power_user", label: "Power User", description: "Highly experienced, frequent user" },
+    { id: "reluctant_user", label: "Reluctant User", description: "Someone who has to use it but resists" },
+  ],
+  healthcare: [
+    { id: "patient", label: "Patient", description: "Person receiving care or treatment" },
+    { id: "caregiver", label: "Caregiver", description: "Family member or informal carer" },
+    { id: "clinician", label: "Clinician", description: "Doctor, nurse or clinical practitioner" },
+    { id: "admin_health", label: "Administrative Staff", description: "Scheduling, records, billing" },
+    { id: "manager_health", label: "Department Manager", description: "Ward or department lead" },
+    { id: "elderly_patient", label: "Elderly Patient", description: "Older person navigating healthcare" },
+    { id: "chronic", label: "Chronic Condition Patient", description: "Person managing a long-term condition" },
+  ],
+  fintech: [
+    { id: "retail_customer", label: "Retail Customer", description: "Everyday banking and payments user" },
+    { id: "small_business", label: "Small Business Owner", description: "Managing finances for a small company" },
+    { id: "investor", label: "Investor", description: "Person managing savings or investments" },
+    { id: "underbanked", label: "Underbanked Person", description: "Limited access to traditional banking" },
+    { id: "compliance", label: "Compliance Officer", description: "Risk and regulatory professional" },
+    { id: "fintech_manager", label: "Product Manager", description: "Building financial products" },
+  ],
+  education: [
+    { id: "student", label: "Student", description: "Learner at any level or institution" },
+    { id: "lecturer", label: "Lecturer / Teacher", description: "Educator or instructor" },
+    { id: "staff_admin", label: "Administrative Staff", description: "Enrollment, paperwork, back-office" },
+    { id: "staff_teaching", label: "Teaching Support Staff", description: "Lab assistants, tutors" },
+    { id: "staff_org", label: "Organisational Staff", description: "Operations, HR, management" },
+    { id: "parent", label: "Parent", description: "Parent of a student" },
+    { id: "first_gen", label: "First-generation Student", description: "First in family to attend university" },
+  ],
+  retail: [
+    { id: "frequent_shopper", label: "Frequent Shopper", description: "Regular customer with high loyalty" },
+    { id: "bargain_hunter", label: "Bargain Hunter", description: "Price-driven, deal-seeking customer" },
+    { id: "impulse_buyer", label: "Impulse Buyer", description: "Emotionally driven purchase decisions" },
+    { id: "researcher", label: "Deliberate Researcher", description: "Researches extensively before buying" },
+    { id: "store_staff", label: "Store Staff", description: "Frontline retail employee" },
+    { id: "retail_manager", label: "Store Manager", description: "Responsible for store performance" },
+    { id: "online_shopper", label: "Online Shopper", description: "Primarily shops digitally" },
+  ],
+  publicservices: [
+    { id: "citizen", label: "Citizen", description: "Member of the general public using services" },
+    { id: "vulnerable_citizen", label: "Vulnerable Citizen", description: "Person with complex or urgent needs" },
+    { id: "frontline_staff", label: "Frontline Staff", description: "Public-facing service worker" },
+    { id: "policy_maker", label: "Policy Maker", description: "Decision maker shaping services" },
+    { id: "ngo_worker", label: "NGO / Third Sector Worker", description: "Charity or community organisation" },
+    { id: "new_arrival", label: "New Arrival / Immigrant", description: "Person navigating unfamiliar systems" },
+  ],
+  b2b: [
+    { id: "buyer", label: "Procurement Buyer", description: "Person responsible for purchasing decisions" },
+    { id: "end_user_b2b", label: "End User", description: "Employee who uses the product day to day" },
+    { id: "it_manager", label: "IT Manager", description: "Evaluates technical fit and integration" },
+    { id: "exec_sponsor", label: "Executive Sponsor", description: "Senior stakeholder who approves budget" },
+    { id: "champion", label: "Internal Champion", description: "Advocates for the product internally" },
+    { id: "skeptic", label: "Skeptic", description: "Resistant to change or new tools" },
+  ],
+  mobility: [
+    { id: "daily_commuter", label: "Daily Commuter", description: "Travels to work or study regularly" },
+    { id: "leisure_traveller", label: "Leisure Traveller", description: "Travels for holidays or personal trips" },
+    { id: "business_traveller", label: "Business Traveller", description: "Frequent work-related travel" },
+    { id: "driver", label: "Driver / Operator", description: "Provides transport as a service" },
+    { id: "logistics_staff", label: "Logistics Staff", description: "Manages goods movement and delivery" },
+    { id: "car_free", label: "Car-free Urban Dweller", description: "Relies entirely on public transport" },
+  ],
+};
 
 const baseQuestions = [
   "Who is this persona? Describe them in a few sentences. Their life situation, where they are, what they do.",
@@ -103,43 +161,18 @@ const domainQuestions: Record<string, string[]> = {
 };
 
 const personaTypeQuestions: Record<string, string[]> = {
-  student: [
-    "What motivates them to keep going when studying gets hard?",
-    "How do they feel about the institution they are part of?",
-  ],
-  lecturer: [
-    "What does a good teaching day look like for them?",
-    "What institutional pressures affect their work most?",
-  ],
-  staff_admin: [
-    "What processes take up most of their time?",
-    "Where do they feel the system lets them or others down?",
-  ],
-  staff_org: [
-    "How do they balance organisational goals with people's needs?",
-    "What change would make the biggest difference in their work?",
-  ],
-  staff_teaching: [
-    "How do they support learners day to day?",
-    "What resources or structures are missing that would help them?",
-  ],
-  professional: [
-    "How do they stay current in their field?",
-    "What does excellence look like in their role?",
-  ],
-  manager: [
-    "How do they prioritise when everything feels urgent?",
-    "What does success for their team look like?",
-  ],
-  caregiver: [
-    "How does caregiving affect the rest of their life?",
-    "What support do they wish they had?",
-  ],
-  citizen: [
-    "How do they interact with public services in daily life?",
-    "What would make them feel more heard or included?",
-  ],
-  user: [],
+  student: ["What motivates them to keep going when studying gets hard?", "How do they feel about the institution they are part of?"],
+  lecturer: ["What does a good teaching day look like for them?", "What institutional pressures affect their work most?"],
+  staff_admin: ["What processes take up most of their time?", "Where do they feel the system lets them or others down?"],
+  staff_org: ["How do they balance organisational goals with people needs?", "What change would make the biggest difference in their work?"],
+  staff_teaching: ["How do they support learners day to day?", "What resources or structures are missing that would help them?"],
+  patient: ["How has their condition or situation changed their daily life?", "What do they wish healthcare providers understood about them?"],
+  caregiver: ["How does caregiving affect the rest of their life?", "What support do they wish they had?"],
+  clinician: ["What does a good patient interaction look like for them?", "Where does the system get in the way of good care?"],
+  citizen: ["How do they interact with public services in daily life?", "What would make them feel more heard or included?"],
+  buyer: ["How do they justify a purchase decision to their organisation?", "What makes them trust a new vendor?"],
+  daily_commuter: ["What is the most frustrating part of their regular journey?", "What would make them change how they travel?"],
+  default: [],
 };
 
 const followUpMap: Record<number, string> = {
@@ -148,26 +181,18 @@ const followUpMap: Record<number, string> = {
   5: "Where does that worry come from? Has something happened to trigger it?",
 };
 
-const avatars = [
-  { id: "avatar1", emoji: "👩‍💼", label: "Professional Woman" },
-  { id: "avatar2", emoji: "👨‍💼", label: "Professional Man" },
-  { id: "avatar3", emoji: "👩‍🎓", label: "Student Woman" },
-  { id: "avatar4", emoji: "👨‍🎓", label: "Student Man" },
-  { id: "avatar5", emoji: "👩‍⚕️", label: "Healthcare Woman" },
-  { id: "avatar6", emoji: "👨‍⚕️", label: "Healthcare Man" },
-  { id: "avatar7", emoji: "👩‍🏫", label: "Teacher Woman" },
-  { id: "avatar8", emoji: "👨‍🏫", label: "Teacher Man" },
-  { id: "avatar9", emoji: "🧓", label: "Senior" },
-  { id: "avatar10", emoji: "👶", label: "Young Person" },
-  { id: "avatar11", emoji: "👩‍🔧", label: "Technical Woman" },
-  { id: "avatar12", emoji: "👨‍🔧", label: "Technical Man" },
-];
+const avatarList = Array.from({ length: 16 }, (_, i) => ({
+  id: `avatar-${i + 1}`,
+  src: `/avatars/avatar-${i + 1}.jpg`,
+  label: `Person ${i + 1}`,
+}));
 
 export default function Tool() {
   const [phase, setPhase] = useState<Phase>("domain");
   const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
   const [selectedPersonaType, setSelectedPersonaType] = useState<PersonaType | null>(null);
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
+  const [personaNameInput, setPersonaNameInput] = useState("");
   const [questions, setQuestions] = useState<string[]>([]);
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
@@ -183,6 +208,7 @@ export default function Tool() {
   const [exportEmail, setExportEmail] = useState("");
   const [exportSent, setExportSent] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try {
@@ -203,6 +229,10 @@ export default function Tool() {
     } catch { /* ignore */ }
   }, []);
 
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
+
   const callAPI = async (messages: Message[], system: string) => {
     const res = await fetch("/api/persona", {
       method: "POST",
@@ -218,10 +248,16 @@ export default function Tool() {
     setPhase("personatype");
   };
 
-  const startQuestionnaire = (type: PersonaType) => {
+  const startWithType = (type: PersonaType | null) => {
     setSelectedPersonaType(type);
+    setPhase("naming");
+  };
+
+  const startQuestionnaire = () => {
     const domainExtra = domainQuestions[selectedDomain?.id || ""] || [];
-    const typeExtra = personaTypeQuestions[type.id] || [];
+    const typeExtra = selectedPersonaType
+      ? (personaTypeQuestions[selectedPersonaType.id] || personaTypeQuestions.default || [])
+      : [];
     setQuestions([...baseQuestions, ...domainExtra, ...typeExtra]);
     setPhase("questionnaire");
   };
@@ -245,8 +281,7 @@ export default function Tool() {
   const handleFollowUp = () => {
     if (!followUpAnswer.trim()) return;
     const updatedAnswers = [...answers];
-    updatedAnswers[updatedAnswers.length - 1] =
-      updatedAnswers[updatedAnswers.length - 1] + " " + followUpAnswer;
+    updatedAnswers[updatedAnswers.length - 1] += " " + followUpAnswer;
     setAnswers(updatedAnswers);
     setFollowUpAnswer("");
     setFollowUp(null);
@@ -275,12 +310,17 @@ export default function Tool() {
       .map((q, i) => `Q: ${q}\nA: ${finalAnswers[i] || "Not answered"}`)
       .join("\n\n");
 
+    const nameInstruction = personaNameInput.trim()
+      ? `The persona's name must be: ${personaNameInput.trim()}`
+      : `Generate a realistic full name for the persona.`;
+
     const systemPrompt = `You are an expert service designer. Based on research interview answers, generate a rich persona.
 
 The persona type is: ${selectedPersonaType?.label || "general"}
 The domain context is: ${selectedDomain?.label || "general"}
+${nameInstruction}
 
-Important: tailor the persona specifically to this type and domain. No em dashes.
+Tailor the persona specifically to this type and domain. No em dashes.
 
 Return ONLY valid JSON, no markdown, no extra text:
 {
@@ -310,11 +350,7 @@ Return ONLY valid JSON, no markdown, no extra text:
       setPhase("persona");
       try {
         localStorage.setItem("persona-builder-state", JSON.stringify({
-          persona: parsed,
-          selectedDomain,
-          selectedPersonaType,
-          selectedAvatar,
-          chatMessages: [],
+          persona: parsed, selectedDomain, selectedPersonaType, selectedAvatar, chatMessages: [],
         }));
       } catch { /* ignore */ }
     } catch {
@@ -332,8 +368,7 @@ Return ONLY valid JSON, no markdown, no extra text:
       setChatMessages([intro]);
       try {
         localStorage.setItem("persona-builder-state", JSON.stringify({
-          persona, selectedDomain, selectedPersonaType, selectedAvatar,
-          chatMessages: [intro],
+          persona, selectedDomain, selectedPersonaType, selectedAvatar, chatMessages: [intro],
         }));
       } catch { /* ignore */ }
     }
@@ -366,8 +401,7 @@ Respond as this real person. First person only. Stay in character. Never mention
     setChatMessages(finalMessages);
     try {
       localStorage.setItem("persona-builder-state", JSON.stringify({
-        persona, selectedDomain, selectedPersonaType, selectedAvatar,
-        chatMessages: finalMessages,
+        persona, selectedDomain, selectedPersonaType, selectedAvatar, chatMessages: finalMessages,
       }));
     } catch { /* ignore */ }
     setLoading(false);
@@ -381,34 +415,22 @@ Respond as this real person. First person only. Stay in character. Never mention
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: exportEmail,
-          persona,
+          email: exportEmail, persona,
           domain: selectedDomain?.label,
           chatMessages: chatMessages.length > 0 ? chatMessages : [],
         }),
       });
       setExportSent(true);
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
     setExportLoading(false);
   };
 
   const clearSaved = () => {
     try { localStorage.removeItem("persona-builder-state"); } catch { /* ignore */ }
     setPhase("domain");
-    setAnswers([]);
-    setCurrentQ(0);
-    setPersona(null);
-    setChatMessages([]);
-    setSelectedDomain(null);
-    setSelectedPersonaType(null);
-    setSelectedAvatar(null);
-  };
-
-  const getAvatarDisplay = () => {
-    if (!selectedAvatar) return null;
-    return avatars.find(a => a.id === selectedAvatar)?.emoji || null;
+    setAnswers([]); setCurrentQ(0); setPersona(null); setChatMessages([]);
+    setSelectedDomain(null); setSelectedPersonaType(null); setSelectedAvatar(null);
+    setPersonaNameInput("");
   };
 
   return (
@@ -442,7 +464,7 @@ Respond as this real person. First person only. Stay in character. Never mention
 
         .tool-wrap {
           min-height: 100vh; padding: 7rem 3rem 4rem;
-          max-width: 820px; margin: 0 auto;
+          max-width: 860px; margin: 0 auto;
         }
 
         .phase-label {
@@ -456,7 +478,14 @@ Respond as this real person. First person only. Stay in character. Never mention
           font-size: clamp(1.8rem, 4vw, 2.8rem);
           line-height: 1.15; margin-bottom: 0.75rem;
         }
-        .phase-sub { font-size: 0.95rem; color: var(--gray); margin-bottom: 3rem; line-height: 1.6; }
+        .phase-sub { font-size: 0.95rem; color: var(--gray); margin-bottom: 2.5rem; line-height: 1.6; }
+
+        .breadcrumb {
+          font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+          color: var(--gray); margin-bottom: 2rem;
+          display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+        }
+        .breadcrumb span { color: var(--black); }
 
         .domain-grid {
           display: grid; grid-template-columns: repeat(4, 1fr);
@@ -474,53 +503,63 @@ Respond as this real person. First person only. Stay in character. Never mention
         }
         .domain-desc { font-size: 0.78rem; color: var(--gray); transition: color 0.2s; line-height: 1.4; }
 
-        .type-grid {
-          display: grid; grid-template-columns: repeat(2, 1fr);
-          gap: 1px; background: var(--light-gray); border: 1px solid var(--light-gray);
-          margin-bottom: 2rem;
-        }
-        .type-card {
-          background: var(--white); padding: 1.25rem 1.5rem;
-          cursor: pointer; transition: background 0.2s; border: none; text-align: left;
-          display: flex; flex-direction: column; gap: 0.25rem;
-        }
-        .type-card:hover { background: var(--black); }
-        .type-card:hover .type-label, .type-card:hover .type-desc { color: var(--white); }
-        .type-label {
-          font-size: 0.9rem; font-weight: 500; color: var(--black); transition: color 0.2s;
-        }
-        .type-desc { font-size: 0.75rem; color: var(--gray); transition: color 0.2s; line-height: 1.4; }
-
-        .breadcrumb {
-          font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
-          color: var(--gray); margin-bottom: 2rem;
-          display: flex; align-items: center; gap: 0.5rem;
-        }
-        .breadcrumb span { color: var(--black); }
-
         .avatar-section { margin-bottom: 2.5rem; }
         .avatar-section-title {
           font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
           color: var(--gray); margin-bottom: 1rem;
         }
         .avatar-grid {
-          display: flex; flex-wrap: wrap; gap: 0.5rem;
+          display: grid; grid-template-columns: repeat(8, 1fr); gap: 0.5rem;
         }
         .avatar-btn {
-          width: 48px; height: 48px; border-radius: 50%;
-          border: 2px solid var(--light-gray); background: var(--white);
-          cursor: pointer; font-size: 1.5rem; display: flex;
-          align-items: center; justify-content: center; transition: all 0.2s;
+          aspect-ratio: 1; border-radius: 50%; overflow: hidden;
+          border: 3px solid transparent; cursor: pointer;
+          transition: all 0.2s; background: var(--light-gray); padding: 0;
         }
-        .avatar-btn:hover { border-color: var(--black); }
-        .avatar-btn.selected { border-color: var(--accent); background: #f0f9d0; }
+        .avatar-btn:hover { border-color: var(--gray); }
+        .avatar-btn.selected { border-color: var(--accent); }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+
+        .type-grid {
+          display: grid; grid-template-columns: repeat(2, 1fr);
+          gap: 1px; background: var(--light-gray); border: 1px solid var(--light-gray);
+          margin-bottom: 1px;
+        }
+        .type-card {
+          background: var(--white); padding: 1.1rem 1.5rem;
+          cursor: pointer; transition: background 0.2s; border: none; text-align: left;
+          display: flex; flex-direction: column; gap: 0.2rem;
+        }
+        .type-card:hover { background: var(--black); }
+        .type-card:hover .type-label, .type-card:hover .type-desc { color: var(--white); }
+        .type-label { font-size: 0.9rem; font-weight: 500; color: var(--black); transition: color 0.2s; }
+        .type-desc { font-size: 0.74rem; color: var(--gray); transition: color 0.2s; line-height: 1.4; }
+
+        .type-none {
+          background: var(--white); padding: 1.1rem 1.5rem;
+          border: 1px solid var(--light-gray); cursor: pointer;
+          text-align: left; width: 100%; font-family: var(--font-body);
+          display: flex; align-items: center; justify-content: space-between;
+          transition: background 0.2s; margin-bottom: 1.5rem;
+        }
+        .type-none:hover { background: var(--light-gray); }
+        .type-none-label { font-size: 0.85rem; color: var(--gray); }
+        .type-none-arrow { font-size: 0.85rem; color: var(--gray); }
+
+        .naming-wrap { max-width: 480px; }
+        .naming-input {
+          width: 100%; padding: 1rem 1.25rem; font-family: var(--font-body); font-size: 1rem;
+          border: 1px solid var(--light-gray); background: var(--white); color: var(--black);
+          outline: none; border-radius: 2px; transition: border-color 0.2s; margin-bottom: 1.5rem;
+        }
+        .naming-input:focus { border-color: var(--black); }
+        .naming-skip { font-size: 0.78rem; color: var(--gray); margin-top: 0.75rem; display: block; }
 
         .progress-bar {
           height: 2px; background: var(--light-gray);
           margin-bottom: 3rem; border-radius: 1px; overflow: hidden;
         }
         .progress-fill { height: 100%; background: var(--accent); transition: width 0.4s ease; }
-
         .question-num {
           font-family: var(--font-display); font-size: 5rem;
           line-height: 1; color: var(--light-gray); margin-bottom: 1rem;
@@ -536,11 +575,9 @@ Respond as this real person. First person only. Stay in character. Never mention
         }
 
         textarea {
-          width: 100%; padding: 1rem 1.25rem;
-          font-family: var(--font-body); font-size: 0.95rem;
-          border: 1px solid var(--light-gray); background: var(--white);
-          color: var(--black); resize: none; outline: none;
-          border-radius: 2px; line-height: 1.6;
+          width: 100%; padding: 1rem 1.25rem; font-family: var(--font-body); font-size: 0.95rem;
+          border: 1px solid var(--light-gray); background: var(--white); color: var(--black);
+          resize: none; outline: none; border-radius: 2px; line-height: 1.6;
           transition: border-color 0.2s; min-height: 120px;
         }
         textarea:focus { border-color: var(--black); }
@@ -558,8 +595,7 @@ Respond as this real person. First person only. Stay in character. Never mention
           display: inline-block; background: transparent; color: var(--gray);
           font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
           padding: 0.9rem 1.5rem; border: none; cursor: pointer;
-          margin-top: 1rem; margin-left: 0.5rem;
-          font-family: var(--font-body); transition: color 0.2s;
+          margin-top: 1rem; margin-left: 0.5rem; font-family: var(--font-body); transition: color 0.2s;
         }
         .btn-ghost:hover { color: var(--black); }
         .btn-outline {
@@ -590,42 +626,54 @@ Respond as this real person. First person only. Stay in character. Never mention
         }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
+        .saved-banner {
+          background: var(--light-gray); padding: 0.85rem 1.25rem; margin-bottom: 2rem;
+          display: flex; align-items: center; justify-content: space-between;
+          border-left: 3px solid var(--accent);
+        }
+        .saved-banner-text { font-size: 0.82rem; color: var(--gray); }
+        .saved-banner-clear {
+          font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+          color: var(--gray); background: none; border: none; cursor: pointer;
+          font-family: var(--font-body); transition: color 0.2s;
+        }
+        .saved-banner-clear:hover { color: var(--black); }
+
+        /* PERSONA CARD */
         .persona-card { border: 1px solid var(--light-gray); margin-bottom: 2rem; }
         .persona-header {
-          background: var(--black); color: var(--white); padding: 2.5rem 3rem;
-          display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+          background: var(--black); color: var(--white); padding: 0;
+          display: grid; grid-template-columns: 180px 1fr;
         }
-        .persona-header-left { display: flex; align-items: flex-start; gap: 1.25rem; }
-        .persona-avatar-display {
-          font-size: 3rem; line-height: 1; flex-shrink: 0;
-          width: 64px; height: 64px; background: #1a1a18;
-          border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        .persona-photo {
+          position: relative; background: #111; overflow: hidden;
+          min-height: 200px;
         }
-        .persona-name {
-          font-family: var(--font-display); font-size: 2.5rem;
-          letter-spacing: 0.03em; margin-bottom: 0.4rem;
+        .persona-header-right {
+          padding: 2rem 2.5rem; display: flex; flex-direction: column; justify-content: flex-end;
         }
-        .persona-meta { font-size: 0.82rem; color: #888; }
-        .persona-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .persona-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
         .persona-badge {
           background: var(--accent); color: var(--black);
-          font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
-          padding: 0.35rem 0.75rem; font-weight: 500; white-space: nowrap; flex-shrink: 0;
+          font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+          padding: 0.3rem 0.65rem; font-weight: 500;
         }
         .persona-badge.secondary {
-          background: transparent; color: #888;
-          border: 1px solid #333;
+          background: transparent; color: #777; border: 1px solid #333;
         }
+        .persona-name {
+          font-family: var(--font-display); font-size: 2.2rem;
+          letter-spacing: 0.03em; margin-bottom: 0.35rem;
+        }
+        .persona-meta { font-size: 0.8rem; color: #777; }
         .persona-quote {
-          padding: 1.5rem 3rem; border-bottom: 1px solid var(--light-gray);
+          padding: 1.5rem 2.5rem; border-bottom: 1px solid var(--light-gray);
           font-family: var(--font-serif); font-style: italic;
-          font-size: 1.1rem; line-height: 1.5; color: #444;
+          font-size: 1.05rem; line-height: 1.55; color: #444;
         }
-        .persona-body { padding: 2rem 3rem; }
+        .persona-body { padding: 2rem 2.5rem; }
         .persona-bio { font-size: 0.9rem; line-height: 1.75; color: #555; margin-bottom: 2rem; }
-        .persona-cols {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 3rem; margin-bottom: 2rem;
-        }
+        .persona-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 3rem; margin-bottom: 2rem; }
         .persona-group-title {
           font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase;
           color: var(--gray); margin-bottom: 0.6rem;
@@ -654,44 +702,69 @@ Respond as this real person. First person only. Stay in character. Never mention
           border: 1px solid var(--light-gray); padding: 0.25rem 0.65rem; color: var(--gray);
         }
 
-        .saved-banner {
-          background: var(--light-gray); padding: 0.85rem 1.25rem;
-          margin-bottom: 2rem; display: flex; align-items: center;
-          justify-content: space-between; border-left: 3px solid var(--accent);
+        /* CHAT - two panel like Lukas */
+        .chat-wrap {
+          position: fixed; top: 72px; left: 0; right: 0; bottom: 0;
+          display: grid; grid-template-columns: 320px 1fr;
+          background: var(--white); z-index: 50;
         }
-        .saved-banner-text { font-size: 0.82rem; color: var(--gray); }
-        .saved-banner-clear {
-          font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
-          color: var(--gray); background: none; border: none; cursor: pointer;
-          font-family: var(--font-body); transition: color 0.2s;
+        .chat-left {
+          background: var(--black); display: flex; flex-direction: column; overflow: hidden;
         }
-        .saved-banner-clear:hover { color: var(--black); }
-
-        .chat-wrap { display: flex; flex-direction: column; }
-        .chat-bar {
-          background: var(--black); color: var(--white);
-          padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.75rem;
+        .chat-photo { flex: 1; position: relative; overflow: hidden; background: #111; }
+        .chat-info { padding: 1.5rem 1.75rem; border-top: 1px solid #1e1e1c; flex-shrink: 0; }
+        .chat-persona-name {
+          font-family: var(--font-display); font-size: 1.8rem;
+          letter-spacing: 0.05em; color: var(--white); margin-bottom: 0.2rem;
         }
-        .chat-dot {
-          width: 7px; height: 7px; background: var(--accent);
-          border-radius: 50%; animation: blink 2s ease-in-out infinite;
+        .chat-persona-meta { font-size: 0.75rem; color: #666; margin-bottom: 0.85rem; line-height: 1.5; }
+        .chat-status {
+          display: flex; align-items: center; gap: 0.5rem;
+          font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: #555;
+        }
+        .chat-status-dot {
+          width: 6px; height: 6px; border-radius: 50%;
+          background: var(--accent); animation: blink 2s ease-in-out infinite; flex-shrink: 0;
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .chat-bar-name { font-size: 0.85rem; font-weight: 500; }
-        .chat-bar-sub { font-size: 0.72rem; color: #888; margin-left: auto; }
-        .chat-bar-avatar { font-size: 1.2rem; }
+
+        .chat-right {
+          display: flex; flex-direction: column; overflow: hidden;
+        }
+        .chat-header {
+          padding: 1.25rem 2rem; border-bottom: 1px solid var(--light-gray);
+          display: flex; align-items: flex-start; justify-content: space-between;
+          gap: 1rem; flex-shrink: 0;
+        }
+        .chat-header-title {
+          font-family: var(--font-serif); font-size: 1rem; color: var(--black); margin-bottom: 0.2rem;
+        }
+        .chat-header-sub { font-size: 0.73rem; color: var(--gray); line-height: 1.5; }
+        .chat-header-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+        .chat-header-btn {
+          font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+          color: var(--gray); background: none; border: 1px solid var(--light-gray);
+          padding: 0.4rem 0.75rem; cursor: pointer; font-family: var(--font-body);
+          transition: all 0.2s; white-space: nowrap;
+        }
+        .chat-header-btn:hover { border-color: var(--black); color: var(--black); }
+
+        .chat-context-banner {
+          padding: 0.75rem 2rem; background: var(--light-gray);
+          border-bottom: 1px solid #d8d7d2; flex-shrink: 0;
+          font-size: 0.76rem; color: #555; line-height: 1.5;
+        }
+        .chat-context-banner strong { color: var(--black); font-weight: 500; }
 
         .chat-messages {
-          border: 1px solid var(--light-gray); border-top: none;
-          min-height: 380px; max-height: 480px; overflow-y: auto;
-          padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;
-          background: var(--white);
+          flex: 1; overflow-y: auto; padding: 1.25rem 2rem;
+          display: flex; flex-direction: column; gap: 1rem;
         }
-        .chat-msg { display: flex; flex-direction: column; gap: 0.2rem; max-width: 78%; }
+        .chat-msg { display: flex; flex-direction: column; gap: 0.2rem; max-width: 75%; }
         .chat-msg.user { align-self: flex-end; align-items: flex-end; }
         .chat-msg.assistant { align-self: flex-start; }
-        .chat-sender { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); }
-        .chat-bubble { padding: 0.7rem 1rem; font-size: 0.875rem; line-height: 1.6; border-radius: 2px; }
+        .chat-sender { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); }
+        .chat-bubble { padding: 0.7rem 1rem; font-size: 0.875rem; line-height: 1.65; border-radius: 2px; }
         .chat-msg.user .chat-bubble { background: var(--black); color: var(--white); }
         .chat-msg.assistant .chat-bubble { background: var(--light-gray); color: var(--black); }
 
@@ -707,30 +780,23 @@ Respond as this real person. First person only. Stay in character. Never mention
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes typingBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-        .chat-input-row { display: flex; border: 1px solid var(--light-gray); border-top: none; }
-        .chat-input {
-          flex: 1; padding: 0.9rem 1.25rem;
-          font-family: var(--font-body); font-size: 0.875rem;
-          border: none; background: var(--white); color: var(--black);
-          outline: none; resize: none; min-height: 0;
+        .chat-input-area {
+          padding: 1rem 2rem; border-top: 1px solid var(--light-gray);
+          display: flex; gap: 0; flex-shrink: 0;
         }
+        .chat-input {
+          flex: 1; padding: 0.85rem 1.25rem; font-family: var(--font-body); font-size: 0.875rem;
+          border: 1px solid var(--light-gray); border-right: none;
+          background: var(--white); color: var(--black); outline: none; resize: none;
+        }
+        .chat-input:focus { border-color: var(--black); }
         .chat-send {
-          background: var(--black); color: var(--white); border: none; padding: 0.9rem 1.5rem;
+          background: var(--black); color: var(--white); border: none; padding: 0.85rem 1.5rem;
           font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
-          cursor: pointer; font-family: var(--font-body); transition: background 0.2s;
+          cursor: pointer; font-family: var(--font-body); transition: background 0.2s; white-space: nowrap;
         }
         .chat-send:hover { background: #333; }
         .chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        .chat-footer {
-          display: flex; gap: 1.5rem; margin-top: 1.25rem; align-items: center;
-        }
-        .chat-footer-btn {
-          font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
-          color: var(--gray); background: none; border: none; cursor: pointer;
-          font-family: var(--font-body); transition: color 0.2s; padding: 0;
-        }
-        .chat-footer-btn:hover { color: var(--black); }
 
         .export-modal-bg {
           position: fixed; inset: 0; background: rgba(0,0,0,0.5);
@@ -741,8 +807,7 @@ Respond as this real person. First person only. Stay in character. Never mention
           max-width: 420px; width: 90%; border: 1px solid var(--light-gray);
         }
         .export-modal-title {
-          font-family: var(--font-serif); font-size: 1.4rem;
-          margin-bottom: 0.5rem; color: var(--black);
+          font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 0.5rem; color: var(--black);
         }
         .export-modal-sub { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.5rem; line-height: 1.5; }
         .export-input {
@@ -753,8 +818,8 @@ Respond as this real person. First person only. Stay in character. Never mention
         .export-input:focus { border-color: var(--black); }
         .export-success { text-align: center; padding: 1rem 0; }
         .export-success-icon {
-          font-family: var(--font-display); font-size: 3rem;
-          color: var(--accent); display: block; margin-bottom: 0.5rem;
+          font-family: var(--font-display); font-size: 3rem; color: var(--accent);
+          display: block; margin-bottom: 0.5rem;
         }
         .export-success-text { font-size: 0.9rem; color: var(--gray); line-height: 1.5; }
 
@@ -762,13 +827,14 @@ Respond as this real person. First person only. Stay in character. Never mention
           .tool-wrap { padding: 6rem 1.5rem 3rem; }
           .domain-grid { grid-template-columns: repeat(2, 1fr); }
           .type-grid { grid-template-columns: 1fr; }
+          .avatar-grid { grid-template-columns: repeat(4, 1fr); }
           .persona-cols { grid-template-columns: 1fr; }
-          .persona-header { flex-direction: column; }
+          .persona-header { grid-template-columns: 1fr; }
+          .persona-photo { height: 200px; }
           .tool-nav { padding: 1rem 1.5rem; }
-          .persona-body { padding: 1.5rem; }
-          .persona-quote { padding: 1.25rem 1.5rem; }
           .persona-actions { flex-direction: column; align-items: flex-start; }
-          .persona-actions .btn-outline { margin-left: 0; }
+          .chat-wrap { grid-template-columns: 1fr; }
+          .chat-left { height: 40vh; }
         }
       `}</style>
 
@@ -777,304 +843,377 @@ Respond as this real person. First person only. Stay in character. Never mention
         <a href="/" className="tool-nav-back">Back to portfolio</a>
       </nav>
 
-      <div className="tool-wrap">
-
-        {/* DOMAIN */}
-        {phase === "domain" && (
-          <>
-            <div className="phase-label">AI Persona Builder</div>
-            <h1 className="phase-title">Build a research-quality persona.</h1>
-            <p className="phase-sub">Pick your domain. The questions adapt to your context and go deeper based on what you share.</p>
-            <div className="domain-grid">
-              {domains.map(d => (
-                <button key={d.id} className="domain-card" onClick={() => selectDomain(d)}>
-                  <div className="domain-label">{d.label}</div>
-                  <div className="domain-desc">{d.description}</div>
-                </button>
-              ))}
+      {/* CHAT OVERLAY - full screen two panel */}
+      {phase === "chat" && persona && (
+        <div className="chat-wrap">
+          {/* LEFT */}
+          <div className="chat-left">
+            <div className="chat-photo">
+              {selectedAvatar ? (
+                <Image
+                  src={`/avatars/${selectedAvatar}.jpg`}
+                  alt={persona.name}
+                  fill
+                  style={{ objectFit: "cover", objectPosition: "center top" }}
+                />
+              ) : (
+                <div style={{ width: "100%", height: "100%", background: "#1a1a18",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontFamily: "var(--font-display)", fontSize: "4rem", color: "#333",
+                  letterSpacing: "0.05em" }}>
+                  {persona.name.charAt(0)}
+                </div>
+              )}
             </div>
-          </>
-        )}
-
-        {/* PERSONA TYPE */}
-        {phase === "personatype" && (
-          <>
-            <div className="breadcrumb">
-              <span>{selectedDomain?.label}</span> / Persona Type
-            </div>
-            <div className="phase-label">Step 2 of 2</div>
-            <h1 className="phase-title">Who is this persona?</h1>
-            <p className="phase-sub">Choose the type of person you are designing for. This shapes the questions.</p>
-
-            <div className="avatar-section">
-              <div className="avatar-section-title">Choose an avatar (optional)</div>
-              <div className="avatar-grid">
-                {avatars.map(a => (
-                  <button
-                    key={a.id}
-                    className={`avatar-btn ${selectedAvatar === a.id ? "selected" : ""}`}
-                    onClick={() => setSelectedAvatar(selectedAvatar === a.id ? null : a.id)}
-                    title={a.label}
-                  >
-                    {a.emoji}
-                  </button>
-                ))}
+            <div className="chat-info">
+              <div className="chat-persona-name">{persona.name.toUpperCase()}</div>
+              <div className="chat-persona-meta">
+                {persona.age} · {persona.occupation}<br />{persona.location}
+              </div>
+              <div className="chat-status">
+                <div className="chat-status-dot" />
+                Ready to talk
               </div>
             </div>
-
-            <div className="type-grid">
-              {personaTypes.map(t => (
-                <button key={t.id} className="type-card" onClick={() => startQuestionnaire(t)}>
-                  <div className="type-label">{t.label}</div>
-                  <div className="type-desc">{t.description}</div>
-                </button>
-              ))}
-            </div>
-            <button className="btn-ghost" style={{ marginTop: 0, paddingLeft: 0 }} onClick={() => setPhase("domain")}>
-              Back to domains
-            </button>
-          </>
-        )}
-
-        {/* QUESTIONNAIRE */}
-        {phase === "questionnaire" && (
-          <>
-            <div className="breadcrumb">
-              <span>{selectedDomain?.label}</span> / <span>{selectedPersonaType?.label}</span> / Questions
-            </div>
-            <div className="phase-label">
-              Question {currentQ + 1} of {questions.length}
-            </div>
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${(currentQ / questions.length) * 100}%` }} />
-            </div>
-            <div className="question-num">0{currentQ + 1}</div>
-            {!awaitingFollowUp ? (
-              <>
-                <div className="question-text">{questions[currentQ]}</div>
-                <textarea
-                  value={currentAnswer}
-                  onChange={e => setCurrentAnswer(e.target.value)}
-                  placeholder="Take your time. The more specific you are, the richer the persona."
-                  onKeyDown={e => { if (e.key === "Enter" && e.metaKey) handleAnswer(); }}
-                />
-                <div>
-                  <button className="btn-main" onClick={handleAnswer} disabled={!currentAnswer.trim()}>
-                    {currentQ + 1 === questions.length ? "Generate Persona" : "Next"}
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="question-text">{questions[currentQ]}</div>
-                <div className="followup-box">{followUp}</div>
-                <textarea
-                  value={followUpAnswer}
-                  onChange={e => setFollowUpAnswer(e.target.value)}
-                  placeholder="Your answer..."
-                />
-                <div>
-                  <button className="btn-main" onClick={handleFollowUp} disabled={!followUpAnswer.trim()}>
-                    Continue
-                  </button>
-                  <button className="btn-ghost" onClick={skipFollowUp}>Skip</button>
-                </div>
-              </>
-            )}
-          </>
-        )}
-
-        {/* GENERATING */}
-        {phase === "generating" && (
-          <div className="generating-wrap">
-            <div className="generating-icon">EG</div>
-            <div className="phase-label" style={{ justifyContent: "center" }}>Building your persona</div>
-            <p className="phase-sub" style={{ maxWidth: 380 }}>
-              Synthesising your answers into a research-quality persona.
-            </p>
           </div>
-        )}
 
-        {/* PERSONA */}
-        {phase === "persona" && persona && (
-          <>
-            <div className="saved-banner">
-              <span className="saved-banner-text">Persona saved. It will be here when you come back.</span>
-              <button className="saved-banner-clear" onClick={clearSaved}>Clear and start over</button>
-            </div>
-            <div className="phase-label">Persona Generated</div>
-            <h2 className="phase-title" style={{ marginBottom: "2rem" }}>Meet {persona.name}.</h2>
-            <div className="persona-card">
-              <div className="persona-header">
-                <div className="persona-header-left">
-                  {getAvatarDisplay() && (
-                    <div className="persona-avatar-display">{getAvatarDisplay()}</div>
-                  )}
-                  <div>
-                    <div className="persona-name">{persona.name}</div>
-                    <div className="persona-meta">{persona.age} · {persona.occupation} · {persona.location}</div>
-                  </div>
-                </div>
-                <div className="persona-badges">
-                  <div className="persona-badge">{selectedDomain?.label}</div>
-                  {selectedPersonaType && (
-                    <div className="persona-badge secondary">{selectedPersonaType.label}</div>
-                  )}
+          {/* RIGHT */}
+          <div className="chat-right">
+            <div className="chat-header">
+              <div>
+                <div className="chat-header-title">Interview {persona.name}</div>
+                <div className="chat-header-sub">
+                  {selectedPersonaType?.label} persona · {selectedDomain?.label} context
                 </div>
               </div>
-              <div className="persona-quote">"{persona.quote}"</div>
-              <div className="persona-body">
-                <p className="persona-bio">{persona.bio}</p>
-                <div className="persona-cols">
-                  <div>
-                    <div className="persona-group-title">Goals</div>
-                    <div className="persona-items">
-                      {persona.goals.map((g, i) => <div className="persona-item" key={i}>{g}</div>)}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="persona-group-title">Frustrations</div>
-                    <div className="persona-items">
-                      {persona.frustrations.map((f, i) => <div className="persona-item" key={i}>{f}</div>)}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="persona-group-title">Motivations</div>
-                    <div className="persona-items">
-                      {persona.motivations.map((m, i) => <div className="persona-item" key={i}>{m}</div>)}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="persona-group-title">Fears</div>
-                    <div className="persona-items">
-                      {persona.fears.map((f, i) => <div className="persona-item" key={i}>{f}</div>)}
-                    </div>
-                  </div>
-                </div>
-                <div className="persona-insight">
-                  <div className="persona-insight-label">Design Insight</div>
-                  <div className="persona-insight-text">{persona.insight}</div>
-                </div>
-                <div className="persona-group-title" style={{ marginBottom: "0.6rem" }}>Personality</div>
-                <div className="persona-traits">
-                  {persona.personality.map((t, i) => <span className="persona-trait" key={i}>{t}</span>)}
-                </div>
-              </div>
-            </div>
-            <div className="persona-actions">
-              <button className="btn-main" onClick={startChat}>
-                {chatMessages.length > 0 ? "Continue interview" : "Interview this persona"}
-              </button>
-              <button className="btn-outline" onClick={() => { setShowExport(true); setExportSent(false); }}>
-                Export results
-              </button>
-              <button className="btn-ghost" onClick={clearSaved}>
-                Build another
-              </button>
-            </div>
-          </>
-        )}
-
-        {/* CHAT */}
-        {phase === "chat" && persona && (
-          <>
-            <div className="phase-label">Persona Interview</div>
-            <h2 className="phase-title" style={{ marginBottom: "2rem" }}>
-              Talking with {persona.name}.
-            </h2>
-            <div className="chat-wrap">
-              <div className="chat-bar">
-                {getAvatarDisplay() && (
-                  <div className="chat-bar-avatar">{getAvatarDisplay()}</div>
-                )}
-                <div className="chat-dot" />
-                <div className="chat-bar-name">{persona.name}</div>
-                <div className="chat-bar-sub">{persona.occupation} · {persona.location}</div>
-              </div>
-              <div className="chat-messages">
-                {chatMessages.map((m, i) => (
-                  <div key={i} className={`chat-msg ${m.role}`}>
-                    <div className="chat-sender">{m.role === "user" ? "You" : persona.name}</div>
-                    <div className="chat-bubble">{m.content}</div>
-                  </div>
-                ))}
-                {loading && (
-                  <div className="typing-indicator">
-                    <div className="typing-dot" />
-                    <div className="typing-dot" />
-                    <div className="typing-dot" />
-                  </div>
-                )}
-              </div>
-              <div className="chat-input-row">
-                <textarea
-                  className="chat-input"
-                  value={chatInput}
-                  onChange={e => setChatInput(e.target.value)}
-                  placeholder="Ask anything..."
-                  rows={1}
-                  onKeyDown={e => {
-                    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); }
-                  }}
-                />
-                <button className="chat-send" onClick={sendChat} disabled={loading || !chatInput.trim()}>
-                  Send
+              <div className="chat-header-actions">
+                <button className="chat-header-btn" onClick={() => { setShowExport(true); setExportSent(false); }}>
+                  Export
+                </button>
+                <button className="chat-header-btn" onClick={() => setPhase("persona")}>
+                  Back to card
                 </button>
               </div>
             </div>
-            <div className="chat-footer">
-              <button className="chat-footer-btn" onClick={() => setPhase("persona")}>
-                Back to persona card
-              </button>
-              <button className="chat-footer-btn" onClick={() => { setShowExport(true); setExportSent(false); }}>
-                Export results
+            <div className="chat-context-banner">
+              <strong>{persona.name}</strong> · {persona.bio}
+            </div>
+            <div className="chat-messages">
+              {chatMessages.map((m, i) => (
+                <div key={i} className={`chat-msg ${m.role}`}>
+                  <div className="chat-sender">{m.role === "user" ? "You" : persona.name}</div>
+                  <div className="chat-bubble">{m.content}</div>
+                </div>
+              ))}
+              {loading && (
+                <div className="typing-indicator">
+                  <div className="typing-dot" /><div className="typing-dot" /><div className="typing-dot" />
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+            <div className="chat-input-area">
+              <textarea
+                className="chat-input"
+                value={chatInput}
+                onChange={e => setChatInput(e.target.value)}
+                placeholder="Ask anything..."
+                rows={1}
+                onKeyDown={e => {
+                  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); }
+                }}
+              />
+              <button className="chat-send" onClick={sendChat} disabled={loading || !chatInput.trim()}>
+                Send
               </button>
             </div>
-          </>
-        )}
+          </div>
+        </div>
+      )}
 
-        {/* EXPORT MODAL */}
-        {showExport && (
-          <div className="export-modal-bg" onClick={() => setShowExport(false)}>
-            <div className="export-modal" onClick={e => e.stopPropagation()}>
-              {!exportSent ? (
-                <>
-                  <div className="export-modal-title">Export your persona</div>
-                  <div className="export-modal-sub">
-                    We will send the persona card{chatMessages.length > 0 ? " and your interview transcript" : ""} to your email.
-                  </div>
-                  <input
-                    className="export-input"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={exportEmail}
-                    onChange={e => setExportEmail(e.target.value)}
-                    onKeyDown={e => { if (e.key === "Enter") sendExport(); }}
-                  />
-                  <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-                    <button className="btn-main" style={{ marginTop: 0 }} onClick={sendExport} disabled={exportLoading || !exportEmail.trim()}>
-                      {exportLoading ? "Sending..." : "Send"}
+      {phase !== "chat" && (
+        <div className="tool-wrap">
+
+          {/* DOMAIN */}
+          {phase === "domain" && (
+            <>
+              <div className="phase-label">AI Persona Builder</div>
+              <h1 className="phase-title">Build a research-quality persona.</h1>
+              <p className="phase-sub">Pick your domain. The questions adapt to your context.</p>
+              <div className="domain-grid">
+                {domains.map(d => (
+                  <button key={d.id} className="domain-card" onClick={() => selectDomain(d)}>
+                    <div className="domain-label">{d.label}</div>
+                    <div className="domain-desc">{d.description}</div>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* PERSONA TYPE */}
+          {phase === "personatype" && (
+            <>
+              <div className="breadcrumb"><span>{selectedDomain?.label}</span> / Who is this persona?</div>
+              <div className="phase-label">Step 2</div>
+              <h1 className="phase-title">Who are you designing for?</h1>
+              <p className="phase-sub">Choose the type of person. This shapes the depth of questions you will be asked.</p>
+
+              <div className="avatar-section">
+                <div className="avatar-section-title">Choose a face for your persona (optional)</div>
+                <div className="avatar-grid">
+                  {avatarList.map(a => (
+                    <button
+                      key={a.id}
+                      className={`avatar-btn ${selectedAvatar === a.id ? "selected" : ""}`}
+                      onClick={() => setSelectedAvatar(selectedAvatar === a.id ? null : a.id)}
+                      title={a.label}
+                    >
+                      <img src={a.src} alt={a.label} className="avatar-img" />
                     </button>
-                    <button className="btn-ghost" style={{ marginTop: 0, marginLeft: 0 }} onClick={() => setShowExport(false)}>
-                      Cancel
+                  ))}
+                </div>
+              </div>
+
+              <div className="type-grid">
+                {(domainPersonaTypes[selectedDomain?.id || "general"] || domainPersonaTypes.general).map(t => (
+                  <button key={t.id} className="type-card" onClick={() => startWithType(t)}>
+                    <div className="type-label">{t.label}</div>
+                    <div className="type-desc">{t.description}</div>
+                  </button>
+                ))}
+              </div>
+              <button className="type-none" onClick={() => startWithType(null)}>
+                <span className="type-none-label">None of these fit my persona. Skip this step.</span>
+                <span className="type-none-arrow">Continue anyway</span>
+              </button>
+              <button className="btn-ghost" style={{ marginTop: 0, paddingLeft: 0 }} onClick={() => setPhase("domain")}>
+                Back to domains
+              </button>
+            </>
+          )}
+
+          {/* NAMING */}
+          {phase === "naming" && (
+            <>
+              <div className="breadcrumb">
+                <span>{selectedDomain?.label}</span> /
+                <span>{selectedPersonaType?.label || "Custom"}</span> / Name
+              </div>
+              <div className="phase-label">Optional</div>
+              <h1 className="phase-title">Would you like to name your persona?</h1>
+              <p className="phase-sub">Give your persona a name to make them feel more real. Leave it blank and we will generate one automatically.</p>
+              <div className="naming-wrap">
+                <input
+                  className="naming-input"
+                  type="text"
+                  placeholder="e.g. Sarah, Marcus, Dr. Kim..."
+                  value={personaNameInput}
+                  onChange={e => setPersonaNameInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") startQuestionnaire(); }}
+                />
+                <button className="btn-main" style={{ marginTop: 0 }} onClick={startQuestionnaire}>
+                  {personaNameInput.trim() ? `Start with ${personaNameInput.trim()}` : "Start with a random name"}
+                </button>
+                <button className="btn-ghost" onClick={() => setPhase("personatype")}>
+                  Back
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* QUESTIONNAIRE */}
+          {phase === "questionnaire" && (
+            <>
+              <div className="breadcrumb">
+                <span>{selectedDomain?.label}</span> /
+                <span>{selectedPersonaType?.label || "Custom"}</span> /
+                Question {currentQ + 1} of {questions.length}
+              </div>
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: `${(currentQ / questions.length) * 100}%` }} />
+              </div>
+              <div className="question-num">0{currentQ + 1}</div>
+              {!awaitingFollowUp ? (
+                <>
+                  <div className="question-text">{questions[currentQ]}</div>
+                  <textarea
+                    value={currentAnswer}
+                    onChange={e => setCurrentAnswer(e.target.value)}
+                    placeholder="Take your time. The more specific you are, the richer the persona."
+                    onKeyDown={e => { if (e.key === "Enter" && e.metaKey) handleAnswer(); }}
+                  />
+                  <div>
+                    <button className="btn-main" onClick={handleAnswer} disabled={!currentAnswer.trim()}>
+                      {currentQ + 1 === questions.length ? "Generate Persona" : "Next"}
                     </button>
                   </div>
                 </>
               ) : (
-                <div className="export-success">
-                  <span className="export-success-icon">OK</span>
-                  <div className="export-modal-title">Sent.</div>
-                  <div className="export-success-text">Check your inbox for {exportEmail}.</div>
-                  <button className="btn-ghost" style={{ marginTop: "1rem" }} onClick={() => setShowExport(false)}>
-                    Close
+                <>
+                  <div className="question-text">{questions[currentQ]}</div>
+                  <div className="followup-box">{followUp}</div>
+                  <textarea
+                    value={followUpAnswer}
+                    onChange={e => setFollowUpAnswer(e.target.value)}
+                    placeholder="Your answer..."
+                  />
+                  <div>
+                    <button className="btn-main" onClick={handleFollowUp} disabled={!followUpAnswer.trim()}>
+                      Continue
+                    </button>
+                    <button className="btn-ghost" onClick={skipFollowUp}>Skip</button>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+
+          {/* GENERATING */}
+          {phase === "generating" && (
+            <div className="generating-wrap">
+              <div className="generating-icon">EG</div>
+              <div className="phase-label" style={{ justifyContent: "center" }}>Building your persona</div>
+              <p className="phase-sub" style={{ maxWidth: 380 }}>
+                Synthesising your answers into a research-quality persona.
+              </p>
+            </div>
+          )}
+
+          {/* PERSONA CARD */}
+          {phase === "persona" && persona && (
+            <>
+              <div className="saved-banner">
+                <span className="saved-banner-text">Persona saved. It will be here when you come back.</span>
+                <button className="saved-banner-clear" onClick={clearSaved}>Clear and start over</button>
+              </div>
+              <div className="phase-label">Persona Generated</div>
+              <h2 className="phase-title" style={{ marginBottom: "2rem" }}>Meet {persona.name}.</h2>
+              <div className="persona-card">
+                <div className="persona-header">
+                  <div className="persona-photo">
+                    {selectedAvatar ? (
+                      <Image
+                        src={`/avatars/${selectedAvatar}.jpg`}
+                        alt={persona.name}
+                        fill
+                        style={{ objectFit: "cover", objectPosition: "center top" }}
+                      />
+                    ) : (
+                      <div style={{ width: "100%", height: "100%", background: "#1a1a18",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontFamily: "var(--font-display)", fontSize: "5rem", color: "#333" }}>
+                        {persona.name.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                  <div className="persona-header-right">
+                    <div className="persona-badges">
+                      <div className="persona-badge">{selectedDomain?.label}</div>
+                      {selectedPersonaType && (
+                        <div className="persona-badge secondary">{selectedPersonaType.label}</div>
+                      )}
+                    </div>
+                    <div className="persona-name">{persona.name}</div>
+                    <div className="persona-meta">{persona.age} · {persona.occupation} · {persona.location}</div>
+                  </div>
+                </div>
+                <div className="persona-quote">"{persona.quote}"</div>
+                <div className="persona-body">
+                  <p className="persona-bio">{persona.bio}</p>
+                  <div className="persona-cols">
+                    <div>
+                      <div className="persona-group-title">Goals</div>
+                      <div className="persona-items">
+                        {persona.goals.map((g, i) => <div className="persona-item" key={i}>{g}</div>)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="persona-group-title">Frustrations</div>
+                      <div className="persona-items">
+                        {persona.frustrations.map((f, i) => <div className="persona-item" key={i}>{f}</div>)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="persona-group-title">Motivations</div>
+                      <div className="persona-items">
+                        {persona.motivations.map((m, i) => <div className="persona-item" key={i}>{m}</div>)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="persona-group-title">Fears</div>
+                      <div className="persona-items">
+                        {persona.fears.map((f, i) => <div className="persona-item" key={i}>{f}</div>)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="persona-insight">
+                    <div className="persona-insight-label">Design Insight</div>
+                    <div className="persona-insight-text">{persona.insight}</div>
+                  </div>
+                  <div className="persona-group-title" style={{ marginBottom: "0.6rem" }}>Personality</div>
+                  <div className="persona-traits">
+                    {persona.personality.map((t, i) => <span className="persona-trait" key={i}>{t}</span>)}
+                  </div>
+                </div>
+              </div>
+              <div className="persona-actions">
+                <button className="btn-main" onClick={startChat}>
+                  {chatMessages.length > 0 ? "Continue interview" : "Interview this persona"}
+                </button>
+                <button className="btn-outline" onClick={() => { setShowExport(true); setExportSent(false); }}>
+                  Export results
+                </button>
+                <button className="btn-ghost" onClick={clearSaved}>
+                  Build another
+                </button>
+              </div>
+            </>
+          )}
+
+        </div>
+      )}
+
+      {/* EXPORT MODAL */}
+      {showExport && (
+        <div className="export-modal-bg" onClick={() => setShowExport(false)}>
+          <div className="export-modal" onClick={e => e.stopPropagation()}>
+            {!exportSent ? (
+              <>
+                <div className="export-modal-title">Export your persona</div>
+                <div className="export-modal-sub">
+                  We will send the persona card{chatMessages.length > 0 ? " and your interview transcript" : ""} to your email.
+                </div>
+                <input
+                  className="export-input"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={exportEmail}
+                  onChange={e => setExportEmail(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") sendExport(); }}
+                />
+                <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                  <button className="btn-main" style={{ marginTop: 0 }} onClick={sendExport} disabled={exportLoading || !exportEmail.trim()}>
+                    {exportLoading ? "Sending..." : "Send"}
+                  </button>
+                  <button className="btn-ghost" style={{ marginTop: 0, marginLeft: 0 }} onClick={() => setShowExport(false)}>
+                    Cancel
                   </button>
                 </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <div className="export-success">
+                <span className="export-success-icon">OK</span>
+                <div className="export-modal-title">Sent.</div>
+                <div className="export-success-text">Check your inbox for {exportEmail}.</div>
+                <button className="btn-ghost" style={{ marginTop: "1rem" }} onClick={() => setShowExport(false)}>
+                  Close
+                </button>
+              </div>
+            )}
           </div>
-        )}
-
-      </div>
+        </div>
+      )}
     </>
   );
 }
