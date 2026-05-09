@@ -62,9 +62,19 @@ export default function Lukas() {
   const [muted, setMuted] = useState(false);
   const [started, setStarted] = useState(false);
   const [listening, setListening] = useState(false);
+  const [hasSpeechSupport, setHasSpeechSupport] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<unknown>(null);
+
+  useEffect(() => {
+    // Check speech support on client only
+    const supported = !!(
+      (window as unknown as Record<string, unknown>).SpeechRecognition ||
+      (window as unknown as Record<string, unknown>).webkitSpeechRecognition
+    );
+    setHasSpeechSupport(supported);
+  }, []);
 
   useEffect(() => {
     try {
@@ -148,10 +158,7 @@ export default function Lukas() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-    if (!SpeechRecognitionAPI) {
-      alert("Bitte Chrome verwenden.");
-      return;
-    }
+    if (!SpeechRecognitionAPI) return;
 
     if (listening) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -164,30 +171,26 @@ export default function Lukas() {
     recognition.lang = "de-DE";
     recognition.continuous = false;
     recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
-      console.log("Mic started");
       setListening(true);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recognition.onresult = (event: any) => {
-      console.log("Got result", event);
       let transcript = "";
       for (let i = 0; i < event.results.length; i++) {
         transcript += event.results[i][0].transcript;
       }
-      console.log("Transcript:", transcript);
       setInput(transcript);
     };
 
-    recognition.onerror = (e: unknown) => {
-      console.log("Mic error", e);
+    recognition.onerror = () => {
       setListening(false);
     };
 
     recognition.onend = () => {
-      console.log("Mic ended");
       setListening(false);
     };
 
@@ -415,6 +418,12 @@ export default function Lukas() {
           background: #fff0f0; color: #cc0000; border-color: #cc0000;
           animation: micPulse 1s ease-in-out infinite;
         }
+        .mic-btn-disabled {
+          background: var(--white); color: var(--light-gray);
+          border: 1px solid var(--light-gray); border-right: none;
+          padding: 0 1rem; font-size: 1rem; flex-shrink: 0;
+          display: flex; align-items: center; cursor: default;
+        }
         @keyframes micPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         .chat-input {
           flex: 1; padding: 0.85rem 1.25rem; font-family: var(--font-body); font-size: 0.875rem;
@@ -430,6 +439,12 @@ export default function Lukas() {
         .chat-send:hover { background: #333; }
         .chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
 
+        .browser-note {
+          padding: 0.6rem 2.5rem;
+          font-size: 0.72rem; color: var(--gray); line-height: 1.5;
+          flex-shrink: 0;
+        }
+
         @media (max-width: 900px) {
           .lukas-wrap { grid-template-columns: 1fr; }
           .lukas-left { position: relative; height: auto; top: 0; }
@@ -439,6 +454,7 @@ export default function Lukas() {
           .lukas-header { padding: 1rem 1.5rem; }
           .chat-messages { padding: 1rem 1.5rem; }
           .chat-input-area { padding: 1rem 1.5rem; }
+          .browser-note { padding: 0.6rem 1.5rem; }
         }
       `}</style>
 
@@ -547,14 +563,21 @@ export default function Lukas() {
                 )}
                 <div ref={chatEndRef} />
               </div>
+
               <div className="chat-input-area">
-                <button
-                  className={`mic-btn ${listening ? "listening" : ""}`}
-                  onClick={startListening}
-                  title={listening ? "Aufnahme stoppen" : "Spracheingabe starten"}
-                >
-                  {listening ? "⏹" : "🎤"}
-                </button>
+                {hasSpeechSupport ? (
+                  <button
+                    className={`mic-btn ${listening ? "listening" : ""}`}
+                    onClick={startListening}
+                    title={listening ? "Aufnahme stoppen" : "Spracheingabe starten"}
+                  >
+                    {listening ? "⏹" : "🎤"}
+                  </button>
+                ) : (
+                  <div className="mic-btn-disabled" title="Spracheingabe nicht verfuegbar">
+                    🎤
+                  </div>
+                )}
                 <textarea
                   className="chat-input"
                   value={input}
@@ -576,6 +599,12 @@ export default function Lukas() {
                   Senden
                 </button>
               </div>
+
+              {!hasSpeechSupport && (
+                <div className="browser-note">
+                  Tipp: Fur die Spracheingabe einfach Chrome oder Safari oeffnen. 🎤
+                </div>
+              )}
             </>
           )}
         </div>
