@@ -39,8 +39,7 @@ export default function Home() {
         nav {
           position: fixed; top: 0; left: 0; right: 0; z-index: 100;
           display: flex; align-items: center; justify-content: space-between;
-          padding: 1.25rem 3rem;
-          background: var(--white);
+          padding: 1.25rem 3rem; background: var(--white);
           border-bottom: 1px solid var(--light-gray);
           transition: box-shadow 0.3s;
         }
@@ -96,7 +95,7 @@ export default function Home() {
           color: var(--gray); margin-bottom: 2rem; margin-top: 0.5rem;
         }
         .hero-desc {
-          font-size: 0.95rem; line-height: 1.75; color: #555;
+          font-size: 1rem; line-height: 1.8; color: #555;
           max-width: 560px; margin-bottom: 2.5rem;
         }
         .hero-desc strong { color: var(--black); font-weight: 500; }
@@ -217,8 +216,7 @@ export default function Home() {
           background: var(--accent); color: var(--black);
           font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
           padding: 0.85rem 1.75rem; text-decoration: none;
-          font-family: var(--font-body); font-weight: 500;
-          transition: opacity 0.2s;
+          font-family: var(--font-body); font-weight: 500; transition: opacity 0.2s;
         }
         .tool-banner-btn:hover { opacity: 0.85; }
 
@@ -274,28 +272,23 @@ export default function Home() {
           background: #1a1a18; color: var(--white);
           display: grid; grid-template-columns: 65fr 35fr;
         }
-        .about-left {
-          padding: 4rem 3rem; border-right: 1px solid #2a2a28; width: 100%;
-        }
+        .about-left { padding: 4rem 3rem; border-right: 1px solid #2a2a28; width: 100%; }
         .about-left .section-label { color: #666; }
         .about-left .section-label::before { background: #666; }
         .about-left .section-title {
-          color: var(--white); font-size: clamp(1.4rem, 2.5vw, 1.9rem); margin-bottom: 1.25rem;
+          color: var(--white); font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 1.5rem;
         }
-        .about-body { font-size: 1rem; line-height: 1.85; color: #bbb; max-width: 100%; }
-        .about-body strong { color: var(--white); font-weight: 500; }
-        .about-cta {
-          display: inline-block; margin-top: 2rem;
+        .about-hook { font-size: 1.05rem; line-height: 1.8; color: #bbb; margin-bottom: 1.5rem; }
+        .about-hook strong { color: var(--white); font-weight: 500; }
+        .about-read-more {
+          display: inline-block; margin-top: 0.5rem;
           color: var(--accent); font-size: 0.75rem; letter-spacing: 0.15em;
           text-transform: uppercase; text-decoration: none;
           border-bottom: 1px solid #2a3a1a; padding-bottom: 2px; transition: border-color 0.2s;
         }
-        .about-cta:hover { border-color: var(--accent); }
+        .about-read-more:hover { border-color: var(--accent); }
         .about-right { padding: 4rem 3rem; }
-        .skills-grid {
-          display: grid; grid-template-columns: 1fr 1fr;
-          gap: 1.5rem; margin-bottom: 1.5rem;
-        }
+        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
         .skill-group-title {
           font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
           color: #666; margin-bottom: 0.85rem; white-space: nowrap;
@@ -310,8 +303,7 @@ export default function Home() {
           background: var(--accent); border-radius: 50%; flex-shrink: 0;
         }
         .lang-row {
-          padding-top: 1.5rem; border-top: 1px solid #2a2a28;
-          display: flex; gap: 2rem;
+          padding-top: 1.5rem; border-top: 1px solid #2a2a28; display: flex; gap: 2rem;
         }
         .lang-item { display: flex; flex-direction: column; gap: 0.25rem; }
         .lang-name { font-size: 0.875rem; color: #ddd; }
@@ -357,8 +349,9 @@ export default function Home() {
         <a href="#" className="nav-logo">Enes Gozukucuk</a>
         <ul className="nav-links">
           <li><a href="#work">Work</a></li>
-          <li><a href="#about">About</a></li>
+          <li><a href="/about">About</a></li>
           <li><a href="/tool">Tool</a></li>
+          <li><a href="/lukas">Lukas</a></li>
           <li><a href="#contact" className="nav-cta">Get in touch</a></li>
         </ul>
       </nav>
@@ -370,15 +363,16 @@ export default function Home() {
             Enes
             <span>Gozukucuk</span>
           </h1>
-          <p className="hero-role">Product Strategist & Service Designer</p>
+          <p className="hero-role">Systems Thinker & Builder</p>
           <p className="hero-desc">
-            I work at the intersection of <strong>business strategy, user research, and product thinking.</strong> My projects span market expansion across 19 countries, growing digital audiences from scratch, and redesigning how a university delivers its services to students.
+            I grew up in Adana wondering why the city was not built by the sea.
+            I still walk into every room asking the same question.
             <br /><br />
-            I also build. TypeScript, Flutter, Next.js. Which means I can turn research into prototypes and strategy into working software.
+            <strong>What is broken here, and how could it be better?</strong>
           </p>
           <div className="hero-actions">
             <a href="#work" className="btn-primary">View my work</a>
-            <a href="#about" className="btn-secondary">About me</a>
+            <a href="/about" className="btn-secondary">My story</a>
           </div>
         </div>
         <div className="hero-right">
@@ -397,11 +391,11 @@ export default function Home() {
       <div className="marquee-bar">
         <div className="marquee-track">
           {[
-            "Product Management","Service Design","Innovation Consulting",
-            "User Research","Market Expansion","Growth Strategy",
+            "Systems Thinking", "Service Design", "Product Strategy",
+            "User Research", "Market Expansion", "Growth Strategy",
             "Next.js · TypeScript · Flutter",
-            "Product Management","Service Design","Innovation Consulting",
-            "User Research","Market Expansion","Growth Strategy",
+            "Systems Thinking", "Service Design", "Product Strategy",
+            "User Research", "Market Expansion", "Growth Strategy",
             "Next.js · TypeScript · Flutter",
           ].map((item, i) => (
             <span key={i}>
@@ -415,8 +409,7 @@ export default function Home() {
       <div className="stats">
         {[
           { number: "19", label: "International Markets", sub: "Labrys Consulting" },
-          { number: "55K", label: "Instagram Followers", sub: "Grown from 15K in 8 months" },
-          { number: "8M+", label: "Video Views", sub: "60+ Reels produced" },
+          { number: "55K", label: "Followers Gained", sub: "Grew Okul.com.tr from 15K to 55K" },          { number: "8M+", label: "Video Views", sub: "60+ Reels produced" },
           { number: "3", label: "Case Studies", sub: "Strategy · Growth · Design" },
         ].map((s, i) => (
           <div className="stat fade-up" key={i} style={{ transitionDelay: `${i * 0.1}s` }}>
@@ -432,7 +425,9 @@ export default function Home() {
           <div className="section-label">Live tool</div>
           <h2 className="tool-banner-title">AI Persona Builder for practitioners</h2>
           <p className="tool-banner-sub">
-            Most persona tools produce surface-level profiles. This one runs an adaptive interview, asks follow-up questions based on your answers, and generates a persona you can have a real conversation with.
+            Most persona tools produce surface-level profiles. This one runs an adaptive interview,
+            asks follow-up questions based on your answers, and generates a persona you can have
+            a real conversation with.
           </p>
           <a href="/tool" className="tool-banner-btn">Try the tool</a>
         </div>
@@ -456,7 +451,7 @@ export default function Home() {
             {
               num: "01",
               title: "Refactoring a University as a Service",
-              hook: "An interdisciplinary project at TH Wildau to redesign the student experience from the ground up. Stakeholder research, service blueprinting, and co-design with students, faculty, and administration.",
+              hook: "A university asked a student to help redesign it. Not from the outside, not as a consultant. From within, as someone who felt the same frictions and decided to do something about it.",
               metric: "Ongoing",
               tags: ["Service Design", "Systems Thinking", "UX Research", "Co-design"],
               href: "/work/th-wildau",
@@ -464,7 +459,7 @@ export default function Home() {
             {
               num: "02",
               title: "Growing an EdTech Brand from 15K to 55K",
-              hook: "A content and growth strategy for Okul.com.tr that grew their Instagram audience by 267% in 8 months. Built on audience research, format testing, and consistent KPI tracking.",
+              hook: "I was not an experienced social media manager when I started. I just understood one thing: authentic content made by people who believed in what they were doing would always win.",
               metric: "267% Growth",
               tags: ["Product Strategy", "Growth", "Content", "Analytics"],
               href: "/work/okul",
@@ -472,7 +467,7 @@ export default function Home() {
             {
               num: "03",
               title: "SaaS Expansion Across 19 Markets",
-              hook: "Cross-market business development at Labrys Consulting. Adapted product positioning for each market, generated 70+ qualified leads per day, and improved CRM conversion by 15%.",
+              hook: "Nineteen markets taught me that people make decisions differently than they think they do. Small details change outcomes. I came away with a sharper eye for what actually moves people.",
               metric: "+15% Conversion",
               tags: ["Market Strategy", "Business Development", "CRM", "Research"],
               href: "/work/labrys",
@@ -492,20 +487,24 @@ export default function Home() {
       <section className="about-strip" id="about">
         <div className="about-left">
           <div className="section-label">About</div>
-          <h2 className="section-title">Business thinking,<br />user insight, built in code.</h2>
-          <p className="about-body">
-            I studied Management Information Systems at Bogazici University, then moved to Berlin for a Masters in European Business Management at TH Wildau. Alongside the degree, I work as a student assistant redesigning the university as a service from scratch.<br /><br />
-            Before Berlin: business development across 19 markets, growth strategy for an edtech brand, and a year in a high-volume customer operations role. Each one taught me something different about how people behave under friction.<br /><br />
+          <h2 className="section-title">I find the friction.<br />Then I remove it.</h2>
+          <p className="about-hook">
+            My background spans business development across 19 markets, growing digital audiences from scratch,
+            and redesigning how a university actually works from the inside.
             I also build. TypeScript, Flutter, Firebase, Next.js.
+            Which means I can turn research into prototypes and strategy into working software.
           </p>
-          <a href="#contact" className="about-cta">Get in touch</a>
+          <p className="about-hook" style={{ marginTop: "1rem" }}>
+            <strong>The longer version is worth reading.</strong> It starts in Adana, goes through Istanbul, and ends up in Wildau with a student asking why nothing works the way it should.
+          </p>
+          <a href="/about" className="about-read-more">Read my story</a>
         </div>
         <div className="about-right">
           <div className="skills-grid">
             <div>
               <div className="skill-group-title">Strategy & Research</div>
               <ul className="skill-list">
-                {["Product Strategy", "Service Design", "Market Research", "Consumer Insights", "Growth Strategy"].map(s => <li key={s}>{s}</li>)}
+                {["Service Design", "Product Strategy", "Market Research", "Consumer Insights", "Growth Strategy"].map(s => <li key={s}>{s}</li>)}
               </ul>
             </div>
             <div>
@@ -532,7 +531,7 @@ export default function Home() {
           <div className="footer-sub">Berlin, Germany</div>
         </div>
         <div className="footer-links">
-          <a href="mailto:enesgozukucuk@gmail.com">enesgozukucuk@gmail.com</a>
+          <a href="mailto:enesgozukucukp@gmail.com">enesgozukucuk@gmail.com</a>
           <a href="https://linkedin.com/in/enesgozukucuk" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           <a href="/tool">Persona Tool</a>
         </div>
