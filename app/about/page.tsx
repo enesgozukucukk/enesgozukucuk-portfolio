@@ -212,12 +212,8 @@ export default function About() {
       </div>
 
       <div className="about-footer-strip">
-        <div>
-          <div className="about-footer-title">Want to work together?</div>
-          <div className="about-footer-sub">
-            I am based in Berlin and targeting English-first roles in service design, product strategy, and systems thinking. Available from November 2026.
-          </div>
-        </div>
+       
+          
         <div className="about-footer-links">
           <a href="mailto:enesgozukucuk@gmail.com" className="about-footer-link">Send me an email</a>
           <a href="https://linkedin.com/in/enesgozukucuk" target="_blank" rel="noopener noreferrer" className="about-footer-link">Connect on LinkedIn</a>
