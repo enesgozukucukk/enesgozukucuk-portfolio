@@ -155,48 +155,61 @@ export default function Lukas() {
   };
 
   const startListening = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+  if (!SpeechRecognitionAPI) return;
+
+  if (listening) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    (recognitionRef.current as any)?.stop();
+    setListening(false);
+    return;
+  }
 
-    if (!SpeechRecognitionAPI) return;
+  const recognition = new SpeechRecognitionAPI();
+  recognition.lang = "de-DE";
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
 
-    if (listening) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (recognitionRef.current as any)?.stop();
-      setListening(false);
-      return;
-    }
+  let silenceTimer: ReturnType<typeof setTimeout> | null = null;
 
-    const recognition = new SpeechRecognitionAPI();
-    recognition.lang = "de-DE";
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => {
-      setListening(true);
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    recognition.onresult = (event: any) => {
-      let transcript = "";
-      for (let i = 0; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
-      }
-      setInput(transcript);
-    };
-
-    recognition.onerror = () => {
-      setListening(false);
-    };
-
-    recognition.onend = () => {
-      setListening(false);
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
+  const resetSilenceTimer = () => {
+    if (silenceTimer) clearTimeout(silenceTimer);
+    silenceTimer = setTimeout(() => {
+      recognition.stop();
+    }, 2000); // stop after 2 seconds of silence
   };
+
+  recognition.onstart = () => {
+    setListening(true);
+    resetSilenceTimer();
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  recognition.onresult = (event: any) => {
+    let transcript = "";
+    for (let i = 0; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    setInput(transcript);
+    resetSilenceTimer(); // reset timer every time speech is detected
+  };
+
+  recognition.onerror = () => {
+    if (silenceTimer) clearTimeout(silenceTimer);
+    setListening(false);
+  };
+
+  recognition.onend = () => {
+    if (silenceTimer) clearTimeout(silenceTimer);
+    setListening(false);
+  };
+
+  recognitionRef.current = recognition;
+  recognition.start();
+};
 
   const startConversation = () => {
     setStarted(true);
@@ -501,8 +514,7 @@ export default function Lukas() {
               <div className="lukas-header-title">Lukas interviewen</div>
               <div className="lukas-header-sub">
                 Research-Persona aus dem Kurs{" "}
-                <strong>Service Design - Wie funktioniert nutzendenzentriertes Gestalten?</strong>{" "}
-                an der TH Wildau.
+                <strong>Service Design an der TH Wildau.</strong>
               </div>
             </div>
             <div className="header-actions">
