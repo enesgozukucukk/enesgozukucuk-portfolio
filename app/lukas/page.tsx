@@ -11,46 +11,47 @@ type Message = {
 const LUKAS_SYSTEM_PROMPT = `Du bist Lukas, 23 Jahre alt, Student der Wirtschaftsinformatik im 5. Semester an der TH Wildau.
 
 KERNCHARAKTER:
-Lukas ist kein fauler Student. Er ist faehig, willig und bereit, Einsatz zu zeigen. Was ihm fehlt, sind die richtigen Strukturen, Raeume und Unterstuetzung. Er scheitert nicht am Willen, sondern an fehlender Infrastruktur und einem System, das ihn nicht wirklich abgeholt hat.
+Lukas ist kein fauler Student. Er ist fähig, willig und bereit, Einsatz zu zeigen. Was ihm fehlt, sind die richtigen Strukturen, Räume und Unterstützung. Er scheitert nicht am Willen, sondern an fehlender Infrastruktur und einem System, das ihn nicht wirklich abgeholt hat.
 
 BIOGRAFIE:
-Kommt aus Neubrandenburg, Mecklenburg-Vorpommern. Abitur 2,4. Wirtschaftsinformatik als Kompromiss gewaehlt, weil es nach Praxis und Zukunft klang. Wohnt in einer Dreier-WG in Wildau mit Jonas (Maschinenbau, strukturiert) und Mia (Soziale Arbeit, gutgelaunt). Arbeitet nebenbei bei Media Markt. Engster Kontakt an der Uni ist Ben.
+Kommt aus Neubrandenburg, Mecklenburg-Vorpommern. Abitur 2,4. Wirtschaftsinformatik als Kompromiss gewählt, weil es nach Praxis und Zukunft klang. Wohnt in einer Dreier-WG in Wildau mit Jonas (Maschinenbau, strukturiert) und Mia (Soziale Arbeit, gutgelaunt). Arbeitet nebenbei bei Media Markt. Engster Kontakt an der Uni ist Ben.
 
-WAS LUKAS SICH WUENSCHT:
+WAS LUKAS SICH WÜNSCHT:
 - Er will endlich ein Projekt wirklich durchziehen und verstehen, was er dabei eigentlich tut
-- Er moechte sehen wie das Gelernte in der Praxis angewendet wird
-- Er wuenscht sich ein Umfeld in dem er Fragen stellen kann ohne sich zu blamieren
-- Er moechte Anschluss finden, in Gruppen arbeiten, vom Team-Effekt profitieren
+- Er möchte sehen wie das Gelernte in der Praxis angewendet wird
+- Er wünscht sich ein Umfeld in dem er Fragen stellen kann ohne sich zu blamieren
+- Er möchte Anschluss finden, in Gruppen arbeiten, vom Team-Effekt profitieren
 - Er will am Ende des Studiums wissen was er kann und wohin er will
-- Er moechte Raeume an der TH die er kennt, buchen kann und als seine eigenen empfindet
-- Er will einen Studiengang der ihn Schritt fuer Schritt entwickelt
-- Er moechte dass Fehler als Lernchance begriffen werden
+- Er möchte Räume an der TH die er kennt, buchen kann und als seine eigenen empfindet
+- Er will einen Studiengang der ihn Schritt für Schritt entwickelt
+- Er möchte dass Fehler als Lernchance begriffen werden
 - Er sucht Praxisbezug der Lernen sinnvoll macht
 
 WAS LUKAS FRUSTRIERT:
-- Die digitalen Systeme der TH sind fragmentiert: Unidos, Moodle, Pruefungsportal, Email alle getrennt
-- Er verliert den Ueberblick weil Informationen verstreut sind
+- Die digitalen Systeme der TH sind fragmentiert: Unidos, Moodle, Prüfungsportal, Email alle getrennt
+- Er verliert den Überblick weil Informationen verstreut sind
 - Prokrastination entsteht bei ihm aus fehlender Struktur, nicht aus Faulheit
-- Er lernt mit dem Gefuehl nur fuer Pruefungen zu lernen
-- Er findet keine Lerngruppen obwohl er sie sich wuenscht
+- Er lernt mit dem Gefühl nur für Prüfungen zu lernen
+- Er findet keine Lerngruppen obwohl er sie sich wünscht
 
-PERSOENLICHKEIT:
-Pragmatiker. Teamplayer wenn das Team ihn einbindet. Spielt Videospiele strategisch. Hoert viel Musik, Kopfhoerer als Schutzschild. WG-Filmabend ist sein Anker.
+PERSÖNLICHKEIT:
+Pragmatiker. Teamplayer wenn das Team ihn einbindet. Spielt Videospiele strategisch. Hört viel Musik, Kopfhörer als Schutzschild. WG-Filmabend ist sein Anker.
 
 TYPISCHE ZITATE:
 "Halb wach, was steht heute eigentlich an?"
-"Ich will das mal wirklich verstehen, nicht nur fuer die Pruefung."
-"Ben, weisst du wo der Raum ist?"
+"Ich will das mal wirklich verstehen, nicht nur für die Prüfung."
+"Ben, weißt du wo der Raum ist?"
 "Mach ich einfach morgen."
-"Irgendwie fuehlt sich das alles mehr nach Improvisieren an als nach Studieren."
+"Irgendwie fühlt sich das alles mehr nach Improvisieren an als nach Studieren."
 
 WICHTIGE REGELN:
+- Verwende immer korrekte deutsche Umlaute: ä, ö, ü, Ä, Ö, Ü, ß. Schreibe niemals ae, oe, ue statt der Umlaute.
 - Antworte IMMER auf Deutsch, egal in welcher Sprache die Person schreibt
-- Sprich natuerlich und umgangssprachlich wie ein echter 23-jaehriger Student
-- Erste Person, niemals erwaehnen dass du KI oder Persona bist
-- Halte Antworten unter 100 Woertern
+- Sprich natürlich und umgangssprachlich wie ein echter 23-jähriger Student
+- Erste Person, niemals erwähnen dass du KI oder Persona bist
+- Halte Antworten unter 100 Wörtern
 - Keine Gedankenstriche
-- Zeige Lukas als jemanden der FAEHIG ist und WILL aber dem die Strukturen fehlen`;
+- Zeige Lukas als jemanden der FÄHIG ist und WILL aber dem die Strukturen fehlen`;
 
 const STORAGE_KEY = "lukas-chat-history";
 
@@ -68,7 +69,6 @@ export default function Lukas() {
   const recognitionRef = useRef<unknown>(null);
 
   useEffect(() => {
-    // Check speech support on client only
     const supported = !!(
       (window as unknown as Record<string, unknown>).SpeechRecognition ||
       (window as unknown as Record<string, unknown>).webkitSpeechRecognition
@@ -155,61 +155,61 @@ export default function Lukas() {
   };
 
   const startListening = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-  if (!SpeechRecognitionAPI) return;
-
-  if (listening) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (recognitionRef.current as any)?.stop();
-    setListening(false);
-    return;
-  }
+    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-  const recognition = new SpeechRecognitionAPI();
-  recognition.lang = "de-DE";
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.maxAlternatives = 1;
+    if (!SpeechRecognitionAPI) return;
 
-  let silenceTimer: ReturnType<typeof setTimeout> | null = null;
-
-  const resetSilenceTimer = () => {
-    if (silenceTimer) clearTimeout(silenceTimer);
-    silenceTimer = setTimeout(() => {
-      recognition.stop();
-    }, 2000); // stop after 2 seconds of silence
-  };
-
-  recognition.onstart = () => {
-    setListening(true);
-    resetSilenceTimer();
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  recognition.onresult = (event: any) => {
-    let transcript = "";
-    for (let i = 0; i < event.results.length; i++) {
-      transcript += event.results[i][0].transcript;
+    if (listening) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (recognitionRef.current as any)?.stop();
+      setListening(false);
+      return;
     }
-    setInput(transcript);
-    resetSilenceTimer(); // reset timer every time speech is detected
-  };
 
-  recognition.onerror = () => {
-    if (silenceTimer) clearTimeout(silenceTimer);
-    setListening(false);
-  };
+    const recognition = new SpeechRecognitionAPI();
+    recognition.lang = "de-DE";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
 
-  recognition.onend = () => {
-    if (silenceTimer) clearTimeout(silenceTimer);
-    setListening(false);
-  };
+    let silenceTimer: ReturnType<typeof setTimeout> | null = null;
 
-  recognitionRef.current = recognition;
-  recognition.start();
-};
+    const resetSilenceTimer = () => {
+      if (silenceTimer) clearTimeout(silenceTimer);
+      silenceTimer = setTimeout(() => {
+        recognition.stop();
+      }, 2000);
+    };
+
+    recognition.onstart = () => {
+      setListening(true);
+      resetSilenceTimer();
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onresult = (event: any) => {
+      let transcript = "";
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setInput(transcript);
+      resetSilenceTimer();
+    };
+
+    recognition.onerror = () => {
+      if (silenceTimer) clearTimeout(silenceTimer);
+      setListening(false);
+    };
+
+    recognition.onend = () => {
+      if (silenceTimer) clearTimeout(silenceTimer);
+      setListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
 
   const startConversation = () => {
     setStarted(true);
@@ -453,9 +453,8 @@ export default function Lukas() {
         .chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .browser-note {
-          padding: 0.6rem 2.5rem;
-          font-size: 0.72rem; color: var(--gray); line-height: 1.5;
-          flex-shrink: 0;
+          padding: 0.6rem 2.5rem; font-size: 0.72rem; color: var(--gray);
+          line-height: 1.5; flex-shrink: 0;
         }
 
         @media (max-width: 900px) {
@@ -477,7 +476,6 @@ export default function Lukas() {
       </nav>
 
       <div className="lukas-wrap">
-
         <div className="lukas-left">
           <div className="lukas-photo">
             <Image
@@ -512,10 +510,10 @@ export default function Lukas() {
           <div className="lukas-header">
             <div>
               <div className="lukas-header-title">Lukas interviewen</div>
-              <div className="lukas-header-sub">
-                Research-Persona aus dem Kurs{" "}
-                <strong>Service Design an der TH Wildau.</strong>
-              </div>
+                 Research-Persona aus dem Kurs{" "}
+                <strong>Service Design an der TH Wildau.</strong>{" "}
+                
+              
             </div>
             <div className="header-actions">
               <button
@@ -541,7 +539,7 @@ export default function Lukas() {
               <div className="lukas-start-title">Lern Lukas kennen.</div>
               <div className="lukas-start-sub">
                 Lukas ist 23, studiert Wirtschaftsinformatik an der TH Wildau und
-                kommt aus Neubrandenburg. Er ist faehig und motiviert, aber ihm
+                kommt aus Neubrandenburg. Er ist fähig und motiviert, aber ihm
                 fehlen die richtigen Strukturen. Frag ihn auf Deutsch oder Englisch.
               </div>
               <button className="start-btn" onClick={startConversation}>
@@ -558,7 +556,7 @@ export default function Lukas() {
                 <div className="context-banner">
                   <strong>Lukas</strong>, 23, Wirtschaftsinformatik im 5. Semester.
                   WG in Wildau, Nebenjob bei Media Markt, kommt aus Neubrandenburg.
-                  Dein Gesprach wird gespeichert.
+                  Dein Gespräch wird gespeichert.
                 </div>
                 {messages.map((m, i) => (
                   <div key={i} className={`chat-msg ${m.role}`}>
@@ -586,7 +584,7 @@ export default function Lukas() {
                     {listening ? "⏹" : "🎤"}
                   </button>
                 ) : (
-                  <div className="mic-btn-disabled" title="Spracheingabe nicht verfuegbar">
+                  <div className="mic-btn-disabled" title="Spracheingabe nicht verfügbar">
                     🎤
                   </div>
                 )}
@@ -594,7 +592,7 @@ export default function Lukas() {
                   className="chat-input"
                   value={input}
                   onChange={e => setInput(e.target.value)}
-                  placeholder={listening ? "Hoere zu..." : "Frag Lukas etwas..."}
+                  placeholder={listening ? "Höre zu..." : "Frag Lukas etwas..."}
                   rows={1}
                   onKeyDown={e => {
                     if (e.key === "Enter" && !e.shiftKey) {
@@ -614,7 +612,7 @@ export default function Lukas() {
 
               {!hasSpeechSupport && (
                 <div className="browser-note">
-                  Tipp: Fur die Spracheingabe einfach Chrome oder Safari oeffnen. 🎤
+                  Tipp: Für die Spracheingabe einfach Chrome oder Safari öffnen. 🎤
                 </div>
               )}
             </>
