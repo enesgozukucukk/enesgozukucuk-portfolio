@@ -8,28 +8,6 @@ export default function Home() {
     const nav = document.getElementById("nav");
     const handleScroll = () => nav?.classList.toggle("scrolled", window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
-
-    const fadeEls = document.querySelectorAll(".fade-up");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("visible");
-            observer.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.05 }
-    );
-    fadeEls.forEach((el) => {
-      const rect = el.getBoundingClientRect();
-      if (rect.top < window.innerHeight) {
-        (el as HTMLElement).classList.add("visible");
-      } else {
-        observer.observe(el);
-      }
-    });
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -100,7 +78,6 @@ export default function Home() {
         }
         .hero-desc strong { color: var(--black); font-weight: 500; }
         .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-
         .btn-primary {
           display: inline-block; background: var(--black); color: var(--white);
           font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
@@ -115,10 +92,7 @@ export default function Home() {
           border: 1px solid var(--light-gray); transition: border-color 0.2s;
         }
         .btn-secondary:hover { border-color: var(--black); }
-
-        .hero-right {
-          position: relative; background: var(--black); overflow: hidden;
-        }
+        .hero-right { position: relative; background: var(--black); overflow: hidden; }
         .hero-scroll {
           position: absolute; bottom: 2.5rem; left: 3rem; z-index: 2;
           display: flex; align-items: center; gap: 0.75rem;
@@ -132,24 +106,20 @@ export default function Home() {
         }
         @keyframes scrollLine { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        .marquee-bar {
-          background: var(--black); color: var(--accent);
-          padding: 0.85rem 0; overflow: hidden; white-space: nowrap;
-        }
-        .marquee-item { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 0 2.5rem; }
-        .marquee-dot { color: var(--gray); padding: 0 0.5rem; }
-
         .stats {
           display: grid; grid-template-columns: repeat(4, 1fr);
           border-bottom: 1px solid var(--light-gray);
         }
         .stat {
           padding: 2.5rem 2rem; border-right: 1px solid var(--light-gray);
-          transition: background 0.3s; cursor: default;
+          transition: background 0.3s; cursor: pointer;
+          text-decoration: none; color: inherit; display: block;
         }
         .stat:last-child { border-right: none; }
         .stat:hover { background: var(--black); }
-        .stat:hover .stat-number, .stat:hover .stat-label, .stat:hover .stat-sub { color: var(--white); }
+        .stat:hover .stat-number,
+        .stat:hover .stat-label,
+        .stat:hover .stat-sub { color: var(--white); }
         .stat-number {
           font-family: var(--font-display); font-size: 3rem;
           line-height: 1; color: var(--black); margin-bottom: 0.4rem; transition: color 0.3s;
@@ -160,7 +130,6 @@ export default function Home() {
         }
         .stat-sub { font-size: 0.72rem; color: var(--gray); margin-top: 0.2rem; transition: color 0.3s; }
 
-        .section { padding: 5rem 3rem; }
         .section-label {
           font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
           color: var(--gray); margin-bottom: 1rem;
@@ -188,29 +157,29 @@ export default function Home() {
           font-size: clamp(1.4rem, 2.5vw, 2rem);
           color: var(--white); line-height: 1.2; margin-bottom: 0.65rem;
         }
-        .tool-banner-sub { font-size: 0.875rem; color: #888; line-height: 1.65; max-width: 440px; }
-        .tool-banner-preview {
-          background: #1a1a18; border: 1px solid #2a2a28;
-          border-radius: 4px; padding: 1.5rem; min-width: 240px;
+        .tool-banner-sub { font-size: 0.875rem; color: #888; line-height: 1.65; max-width: 540px; }
+        .tool-banner-right {
+          display: flex; flex-direction: column; gap: 1rem;
+          align-items: flex-start; min-width: 220px;
         }
-        .tool-banner-preview-label {
-          font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase;
-          color: #555; margin-bottom: 0.75rem;
+        .tool-link {
+          display: flex; align-items: center; gap: 0.75rem;
+          text-decoration: none; padding: 1rem 1.25rem;
+          border: 1px solid #2a2a28; width: 100%;
+          transition: border-color 0.2s, background 0.2s;
         }
-        .tool-banner-preview-q { font-size: 0.78rem; color: #ccc; line-height: 1.5; margin-bottom: 1rem; }
-        .tool-banner-preview-bar { height: 1px; background: #2a2a28; margin-bottom: 1rem; position: relative; }
-        .tool-banner-preview-bar::after {
-          content: ''; position: absolute; left: 0; top: 0; height: 100%;
-          background: var(--accent); animation: barPulse 2s ease-in-out infinite;
+        .tool-link:hover { border-color: var(--accent); background: #111; }
+        .tool-link-label {
+          font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+          color: #888; margin-bottom: 0.15rem;
         }
-        @keyframes barPulse { 0%, 100% { width: 60%; } 50% { width: 78%; } }
-        .tool-banner-badge {
-          display: inline-block; background: var(--accent); color: var(--black);
-          font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
-          padding: 0.3rem 0.6rem; font-weight: 500;
-          text-decoration: none; cursor: pointer; transition: opacity 0.2s;
+        .tool-link-name { font-size: 0.9rem; color: var(--white); font-weight: 500; }
+        .tool-link-dot {
+          width: 6px; height: 6px; border-radius: 50%;
+          background: var(--accent); flex-shrink: 0;
+          animation: blink 2s ease-in-out infinite;
         }
-        .tool-banner-badge:hover { opacity: 0.85; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         .tool-banner-btn {
           display: inline-block; margin-top: 1.5rem;
           background: var(--accent); color: var(--black);
@@ -220,13 +189,13 @@ export default function Home() {
         }
         .tool-banner-btn:hover { opacity: 0.85; }
 
+        .work-section { padding: 5rem 3rem; }
         .work-header {
           display: flex; align-items: flex-end;
           justify-content: space-between; margin-bottom: 2.5rem;
         }
-
         .case-studies {
-          display: grid; grid-template-columns: repeat(3, 1fr);
+          display: grid; grid-template-columns: repeat(4, 1fr);
           gap: 1px; background: var(--light-gray); border: 1px solid var(--light-gray);
         }
         .case-card {
@@ -241,8 +210,10 @@ export default function Home() {
           transform: scaleX(0); transition: transform 0.3s; transform-origin: left;
         }
         .case-card:hover { background: var(--black); }
-        .case-card:hover .case-num, .case-card:hover .case-title,
-        .case-card:hover .case-hook, .case-card:hover .case-metric { color: var(--white); }
+        .case-card:hover .case-num,
+        .case-card:hover .case-title,
+        .case-card:hover .case-hook,
+        .case-card:hover .case-metric { color: var(--white); }
         .case-card:hover .case-tags span { color: var(--gray); border-color: #333; }
         .case-card:hover::after { transform: scaleX(1); }
         .case-num {
@@ -337,22 +308,19 @@ export default function Home() {
           .about-strip { grid-template-columns: 1fr; }
           .about-left { padding: 3rem 1.5rem; border-right: none; border-bottom: 1px solid #2a2a28; }
           .about-right { padding: 3rem 1.5rem; }
-          .section { padding: 3.5rem 1.5rem; }
+          .work-section { padding: 3.5rem 1.5rem; }
           .tool-banner { grid-template-columns: 1fr; padding: 3rem 1.5rem; }
-          .tool-banner-preview { min-width: unset; }
           footer { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; }
           .footer-links { text-align: left; }
         }
       `}</style>
 
       <nav id="nav">
-        <a href="#" className="nav-logo">Enes Gozukucuk</a>
+        <a href="/" className="nav-logo">Enes Gozukucuk</a>
         <ul className="nav-links">
           <li><a href="#work">Work</a></li>
           <li><a href="/about">About</a></li>
-          <li><a href="/tool">Tool</a></li>
-          <li><a href="/lukas">Lukas</a></li>
-          <li><a href="#contact" className="nav-cta">Get in touch</a></li>
+          <li><a href="/tools" className="nav-cta">Service Design Tools</a></li>
         </ul>
       </nav>
 
@@ -380,66 +348,70 @@ export default function Home() {
             src="/enes-gozukucuk.jpg"
             alt="Enes Gozukucuk"
             fill
-            sizes="380px"
-            style={{ objectFit: "cover", objectPosition: "center 15%", opacity: 1 }}
+            sizes="(max-width: 900px) 100vw, 760px"
+            quality={100}
+            unoptimized
+            style={{ objectFit: "cover", objectPosition: "center 15%" }}
             priority
           />
         </div>
         <div className="hero-scroll">Scroll</div>
       </section>
 
-      <div className="marquee-bar">
-        <div className="marquee-track">
-          {[
-            "Systems Thinking", "Service Design", "Product Strategy",
-            "User Research", "Market Expansion", "Growth Strategy",
-            "Next.js · TypeScript · Flutter",
-            "Systems Thinking", "Service Design", "Product Strategy",
-            "User Research", "Market Expansion", "Growth Strategy",
-            "Next.js · TypeScript · Flutter",
-          ].map((item, i) => (
-            <span key={i}>
-              <span className="marquee-item">{item}</span>
-              <span className="marquee-dot">·</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
       <div className="stats">
-        {[
-          { number: "19", label: "International Markets", sub: "Labrys Consulting" },
-          { number: "55K", label: "Followers Gained", sub: "Grew Okul.com.tr from 15K to 55K" },          { number: "8M+", label: "Video Views", sub: "60+ Reels produced" },
-          { number: "3", label: "Case Studies", sub: "Strategy · Growth · Design" },
-        ].map((s, i) => (
-          <div className="stat fade-up" key={i} style={{ transitionDelay: `${i * 0.1}s` }}>
-            <div className="stat-number">{s.number}</div>
-            <div className="stat-label">{s.label}</div>
-            <div className="stat-sub">{s.sub}</div>
-          </div>
-        ))}
+        <a href="/work/labrys" className="stat">
+          <div className="stat-number">19</div>
+          <div className="stat-label">International Markets</div>
+          <div className="stat-sub">Labrys Consulting</div>
+        </a>
+        <a href="/work/okul" className="stat">
+          <div className="stat-number">55K</div>
+          <div className="stat-label">Followers Gained</div>
+          <div className="stat-sub">Grew Okul.com.tr from 15K to 55K</div>
+        </a>
+        <a href="/unicore" className="stat">
+          <div className="stat-number">6</div>
+          <div className="stat-label">Features Shipped</div>
+          <div className="stat-sub">Unicore campus app</div>
+        </a>
+        <a href="#work" className="stat">
+          <div className="stat-number">4</div>
+          <div className="stat-label">Case Studies</div>
+          <div className="stat-sub">Strategy · Growth · Design · Build</div>
+        </a>
       </div>
 
-      <div className="tool-banner" id="tool">
+      <div className="tool-banner" id="tools">
         <div className="tool-banner-left">
-          <div className="section-label">Live tool</div>
-          <h2 className="tool-banner-title">AI Persona Builder for practitioners</h2>
+          <div className="section-label">Service Design Tools</div>
+          <h2 className="tool-banner-title">AI tools built for design practitioners</h2>
           <p className="tool-banner-sub">
-            Most persona tools produce surface-level profiles. This one runs an adaptive interview,
-            asks follow-up questions based on your answers, and generates a persona you can have
-            a real conversation with.
+            I noticed that most persona tools were built for marketing teams, not service designers.
+            So I built my own. The Persona Builder runs an adaptive interview and generates a persona
+            you can actually talk to. Lukas is a student persona created in a service design class
+            at TH Wildau, trained on real research data, and available for workshops with university stakeholders.
           </p>
-          <a href="/tool" className="tool-banner-btn">Try the tool</a>
+          <a href="/tools" className="tool-banner-btn">Explore the tools</a>
         </div>
-        <div className="tool-banner-preview">
-          <div className="tool-banner-preview-label">Live demo · Phase 2 of 4</div>
-          <div className="tool-banner-preview-q">"Describe the last time this person felt underserved by a product or service."</div>
-          <div className="tool-banner-preview-bar" />
-          <a href="/tool" className="tool-banner-badge">Open the persona builder</a>
+        <div className="tool-banner-right">
+          <a href="/tool" className="tool-link">
+            <div className="tool-link-dot" />
+            <div>
+              <div className="tool-link-label">Persona Builder</div>
+              <div className="tool-link-name">AI Persona Generator</div>
+            </div>
+          </a>
+          <a href="/lukas" className="tool-link">
+            <div className="tool-link-dot" />
+            <div>
+              <div className="tool-link-label">AI Research Persona</div>
+              <div className="tool-link-name">Interview Lukas</div>
+            </div>
+          </a>
         </div>
       </div>
 
-      <section className="section" id="work" style={{ background: "var(--white)" }}>
+      <section className="work-section" id="work">
         <div className="work-header">
           <div>
             <div className="section-label">Selected work</div>
@@ -447,40 +419,61 @@ export default function Home() {
           </div>
         </div>
         <div className="case-studies">
-          {[
-            {
-              num: "01",
-              title: "Refactoring a University as a Service",
-              hook: "A university asked a student to help redesign it. Not from the outside, not as a consultant. From within, as someone who felt the same frictions and decided to do something about it.",
-              metric: "Ongoing",
-              tags: ["Service Design", "Systems Thinking", "UX Research", "Co-design"],
-              href: "/work/th-wildau",
-            },
-            {
-              num: "02",
-              title: "Growing an EdTech Brand from 15K to 55K",
-              hook: "I was not an experienced social media manager when I started. I just understood one thing: authentic content made by people who believed in what they were doing would always win.",
-              metric: "267% Growth",
-              tags: ["Product Strategy", "Growth", "Content", "Analytics"],
-              href: "/work/okul",
-            },
-            {
-              num: "03",
-              title: "SaaS Expansion Across 19 Markets",
-              hook: "Nineteen markets taught me that people make decisions differently than they think they do. Small details change outcomes. I came away with a sharper eye for what actually moves people.",
-              metric: "+15% Conversion",
-              tags: ["Market Strategy", "Business Development", "CRM", "Research"],
-              href: "/work/labrys",
-            },
-          ].map((c, i) => (
-            <a href={c.href} className="case-card fade-up" key={i} style={{ transitionDelay: `${i * 0.1}s` }}>
-              <div className="case-num">{c.num}</div>
-              <h3 className="case-title">{c.title}</h3>
-              <p className="case-hook">{c.hook}</p>
-              <div className="case-metric">{c.metric}</div>
-              <div className="case-tags">{c.tags.map(t => <span key={t}>{t}</span>)}</div>
-            </a>
-          ))}
+          <a href="/unicore" className="case-card">
+            <div className="case-num">01</div>
+            <h3 className="case-title">Unicore: A Campus App Built from Frustration</h3>
+            <p className="case-hook">
+              I got tired of watching students struggle with fragmented university systems.
+              So I built a full app from scratch, knocked on doors until someone listened,
+              and got hired to redesign the university around it.
+            </p>
+            <div className="case-metric">Self-initiated</div>
+            <div className="case-tags">
+              <span>React</span>
+              <span>Node.js</span>
+              <span>TypeScript</span>
+              <span>Product Design</span>
+            </div>
+          </a>
+          <a href="/work/th-wildau" className="case-card">
+            <div className="case-num">02</div>
+            <h3 className="case-title">Refactoring a University as a Service</h3>
+            <p className="case-hook">
+              A university asked a student to help redesign it. From within, as someone who felt the same frictions.
+            </p>
+            <div className="case-metric">Ongoing</div>
+            <div className="case-tags">
+              <span>Service Design</span>
+              <span>Co-design</span>
+              <span>Research</span>
+            </div>
+          </a>
+          <a href="/work/okul" className="case-card">
+            <div className="case-num">03</div>
+            <h3 className="case-title">Growing an EdTech Brand from 15K to 55K</h3>
+            <p className="case-hook">
+              Persona-first strategy and early short-form video. 267% growth in eight months.
+            </p>
+            <div className="case-metric">267% Growth</div>
+            <div className="case-tags">
+              <span>Growth</span>
+              <span>Content</span>
+              <span>Analytics</span>
+            </div>
+          </a>
+          <a href="/work/labrys" className="case-card">
+            <div className="case-num">04</div>
+            <h3 className="case-title">SaaS Expansion Across 19 Markets</h3>
+            <p className="case-hook">
+              Small details change outcomes. I came away with a sharper eye for what actually moves people.
+            </p>
+            <div className="case-metric">+15% Conversion</div>
+            <div className="case-tags">
+              <span>Market Strategy</span>
+              <span>B2B</span>
+              <span>CRM</span>
+            </div>
+          </a>
         </div>
       </section>
 
@@ -489,13 +482,15 @@ export default function Home() {
           <div className="section-label">About</div>
           <h2 className="section-title">I find the friction.<br />Then I remove it.</h2>
           <p className="about-hook">
-            My background spans business development across 19 markets, growing digital audiences from scratch,
-            and redesigning how a university actually works from the inside.
-            I also build. TypeScript, Flutter, Firebase, Next.js.
-            Which means I can turn research into prototypes and strategy into working software.
+            My background spans business development across 19 markets, growing digital
+            audiences from scratch, and redesigning how a university actually works from
+            the inside. I also build. TypeScript, React, Node.js, Flutter. Which means
+            I can turn research into prototypes and strategy into working software.
           </p>
           <p className="about-hook" style={{ marginTop: "1rem" }}>
-            <strong>The longer version is worth reading.</strong> It starts in Adana, goes through Istanbul, and ends up in Wildau with a student asking why nothing works the way it should.
+            <strong>The longer version is worth reading.</strong> It starts in Adana,
+            goes through Istanbul, and ends up in Wildau with a student asking why
+            nothing works the way it should.
           </p>
           <a href="/about" className="about-read-more">Read my story</a>
         </div>
@@ -504,23 +499,37 @@ export default function Home() {
             <div>
               <div className="skill-group-title">Strategy & Research</div>
               <ul className="skill-list">
-                {["Service Design", "Product Strategy", "Market Research", "Consumer Insights", "Growth Strategy"].map(s => <li key={s}>{s}</li>)}
+                <li>Service Design</li>
+                <li>Product Strategy</li>
+                <li>Market Research</li>
+                <li>Consumer Insights</li>
+                <li>Growth Strategy</li>
               </ul>
             </div>
             <div>
               <div className="skill-group-title">Execution & Build</div>
               <ul className="skill-list">
-                {["Next.js / TypeScript", "Flutter / Firebase", "Data Analytics", "CRM (Sales Cloud)", "Content Systems"].map(s => <li key={s}>{s}</li>)}
+                <li>React / Node.js</li>
+                <li>Next.js / TypeScript</li>
+                <li>Flutter / Firebase</li>
+                <li>LLM Integration</li>
+                <li>CRM (Sales Cloud)</li>
               </ul>
             </div>
           </div>
           <div className="lang-row">
-            {[["Turkish", "Native"], ["English", "C1 Fluent"], ["German", "A2 Conversational"]].map(([name, level]) => (
-              <div className="lang-item" key={name}>
-                <span className="lang-name">{name}</span>
-                <span className="lang-level">{level}</span>
-              </div>
-            ))}
+            <div className="lang-item">
+              <span className="lang-name">Turkish</span>
+              <span className="lang-level">Native</span>
+            </div>
+            <div className="lang-item">
+              <span className="lang-name">English</span>
+              <span className="lang-level">C1 Fluent</span>
+            </div>
+            <div className="lang-item">
+              <span className="lang-name">German</span>
+              <span className="lang-level">A2 Conversational</span>
+            </div>
           </div>
         </div>
       </section>
@@ -531,9 +540,9 @@ export default function Home() {
           <div className="footer-sub">Berlin, Germany</div>
         </div>
         <div className="footer-links">
-          <a href="mailto:enesgozukucukp@gmail.com">enesgozukucuk@gmail.com</a>
+          <a href="mailto:enesgozukucukp@gmail.com">enesgozukucukp@gmail.com</a>
           <a href="https://linkedin.com/in/enesgozukucuk" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <a href="/tool">Persona Tool</a>
+          <a href="/tools">Service Design Tools</a>
         </div>
       </footer>
     </>

@@ -111,7 +111,7 @@ export default function THWildau() {
       </nav>
 
       <div className="cs-hero">
-        <div className="cs-label">Case Study 01</div>
+        <div className="cs-label">Case Study 02</div>
         <h1 className="cs-title">Refactoring a University as a Service</h1>
         <p className="cs-intro">
           A university asked a student to help redesign it. Not from the outside, not as a consultant. From within, as someone who sat in the same lectures, ate at the same mensa, and felt the same frictions. This is that project.

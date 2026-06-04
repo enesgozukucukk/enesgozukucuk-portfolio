@@ -111,7 +111,7 @@ export default function Okul() {
       </nav>
 
       <div className="cs-hero">
-        <div className="cs-label">Case Study 02</div>
+        <div className="cs-label">Case Study 03</div>
         <h1 className="cs-title">Growing an EdTech Brand from 15K to 55K</h1>
         <p className="cs-intro">
           I was not an experienced social media manager when I started. I just understood one thing: to build a loyal audience you first have to understand who they actually are.

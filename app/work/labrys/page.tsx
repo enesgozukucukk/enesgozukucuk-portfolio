@@ -122,7 +122,7 @@ export default function Labrys() {
       </nav>
 
       <div className="cs-hero">
-        <div className="cs-label">Case Study 03</div>
+        <div className="cs-label">Case Study 04</div>
         <h1 className="cs-title">SaaS Expansion Across 19 Markets</h1>
         <p className="cs-intro">
           Nineteen markets taught me that people make decisions differently than they think they do. Small details change outcomes. I came away with a sharper eye for what actually moves people.
