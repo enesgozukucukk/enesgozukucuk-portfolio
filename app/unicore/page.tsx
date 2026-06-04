@@ -170,7 +170,7 @@ export default function Unicore() {
           </div>
           <div className="cs-meta-item">
             <span className="cs-meta-label">Timeline</span>
-            <span className="cs-meta-value">2023 to present</span>
+            <span className="cs-meta-value">2025 to present</span>
           </div>
           <div className="cs-meta-item">
             <span className="cs-meta-label">Status</span>

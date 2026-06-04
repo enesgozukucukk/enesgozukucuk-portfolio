@@ -365,7 +365,7 @@ export default function Home() {
           <div className="stat-sub">Labrys Consulting</div>
         </a>
         <a href="/work/okul" className="stat">
-          <div className="stat-number">55K</div>
+          <div className="stat-number">40K</div>
           <div className="stat-label">Followers Gained</div>
           <div className="stat-sub">Grew Okul.com.tr from 15K to 55K</div>
         </a>
