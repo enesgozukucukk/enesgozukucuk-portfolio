@@ -220,7 +220,7 @@ export default function Labrys() {
             </div>
             <div className="cs-outcome-item">
               <div className="cs-outcome-number">70+</div>
-              <div className="cs-outcome-label">Qualified leads generated daily at peak</div>
+              <div className="cs-outcome-label">Qualified leads generated monthly at peak</div>
             </div>
             <div className="cs-outcome-item">
               <div className="cs-outcome-number">15%</div>
