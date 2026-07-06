@@ -198,11 +198,11 @@ export default function Labrys() {
           <p className="cs-text">The 19 markets spanned three regions, each with distinct dynamics:</p>
           <div className="cs-market-grid">
             {[
-              "United Kingdom", "Germany", "France", "Netherlands",
-              "Spain", "Italy", "Poland", "Czech Republic",
-              "Romania", "UAE", "Saudi Arabia", "Qatar",
-              "Egypt", "Turkey", "South Africa", "Sweden",
-              "Belgium", "Austria", "Portugal"
+              "Germany",  "Netherlands", "Greece",  
+              "Poland", "Czech Republic", "Romania", 
+              "UAE", "Saudi Arabia", "Qatar", "Azerbaijan","Libya", "Morocco",
+              "Egypt", "Turkey", "South Africa", "Bahrain", "Kuwait"
+              , "Lebanon", "Jordan"
             ].map(m => (
               <div className="cs-market-item" key={m}>{m}</div>
             ))}
