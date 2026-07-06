@@ -167,7 +167,7 @@ export default function Labrys() {
             I owned outbound prospecting, lead qualification, and first-stage conversations across all 19 markets. Identifying the right companies and contacts, crafting market-specific outreach, running discovery calls, and managing the CRM data that made the whole operation visible to the wider team.
           </p>
           <p className="cs-text">
-            At peak volume I was generating over 70 qualified leads per day. Volume only works if the quality is there, and keeping quality high across that many contexts required constant recalibration. Every market was a new audience.
+            At peak volume I was generating over 70 qualified leads per month. Volume only works if the quality is there, and keeping quality high across that many contexts required constant recalibration. Every market was a new audience.
           </p>
         </div>
 
