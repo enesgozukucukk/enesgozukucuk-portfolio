@@ -177,9 +177,10 @@ export default function Tools() {
           </p>
           <p className="tool-card-detail">
             The persona was created through real research: workshops, surveys, and co-design
-            sessions with students. That data trained an AI agent that responds as Lukas would,
-            in German, with a realistic voice. University departments use him in workshops to
-            test ideas against the student perspective before making decisions.
+            sessions with students. That research was structured into a detailed system prompt
+            that grounds the AI agent in real student data, so Lukas responds the way a real
+            student would, in German, with a realistic voice. University departments use him
+            in workshops to test ideas against the student perspective before making decisions.
           </p>
           <div className="tool-card-tags">
             <span className="tool-card-tag">German</span>
