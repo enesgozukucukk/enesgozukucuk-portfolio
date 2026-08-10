@@ -320,7 +320,7 @@ export default function Home() {
         <ul className="nav-links">
           <li><a href="#work">Work</a></li>
           <li><a href="/about">About</a></li>
-          <li><a href="/tools" className="nav-cta">Service Design Tools</a></li>
+          <li><a href="/tools" className="nav-cta">Tools</a></li>
         </ul>
       </nav>
 
@@ -383,7 +383,7 @@ export default function Home() {
 
       <div className="tool-banner" id="tools">
         <div className="tool-banner-left">
-          <div className="section-label">Service Design Tools</div>
+          <div className="section-label">Tools</div>
           <h2 className="tool-banner-title">AI tools built for design practitioners</h2>
           <p className="tool-banner-sub">
             I noticed that most persona tools were built for marketing teams, not service designers.
