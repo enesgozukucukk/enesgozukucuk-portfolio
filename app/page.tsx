@@ -542,7 +542,7 @@ export default function Home() {
         <div className="footer-links">
           <a href="mailto:enesgozukucukp@gmail.com">enesgozukucukp@gmail.com</a>
           <a href="https://linkedin.com/in/enesgozukucuk" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <a href="/tools">Service Design Tools</a>
+          <a href="/tools">Tools</a>
         </div>
       </footer>
     </>
