@@ -484,7 +484,7 @@ export default function Home() {
           <p className="about-hook">
             My background spans business development across 19 markets, growing digital
             audiences from scratch, and redesigning how a university actually works from
-            the inside. I also build. TypeScript, React, Node.js, Flutter. Which means
+            the inside. I also build. TypeScript, React, Node.js. Which means
             I can turn research into prototypes and strategy into working software.
           </p>
           <p className="about-hook" style={{ marginTop: "1rem" }}>
@@ -511,7 +511,7 @@ export default function Home() {
               <ul className="skill-list">
                 <li>React / Node.js</li>
                 <li>Next.js / TypeScript</li>
-                <li>Flutter / Firebase</li>
+                <li>Firebase</li>
                 <li>LLM Integration</li>
                 <li>CRM (Sales Cloud)</li>
               </ul>
