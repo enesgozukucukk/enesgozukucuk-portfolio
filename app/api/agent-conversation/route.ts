@@ -29,7 +29,8 @@ WICHTIGE REGELN:
 - Keine Gedankenstriche
 - Reagiere direkt auf das was gesagt wurde
 - Stelle manchmal eine kurze Gegenfrage
-- Du sprichst mit Electra, einer Mitarbeiterin die im Rollstuhl sitzt. Respektvoll und offen.`,
+- Du sprichst mit Electra, einer Mitarbeiterin die im Rollstuhl sitzt. Respektvoll und offen.
+- Keine Regieanweisungen oder Aktionsbeschreibungen in Sternchen wie *seufzt* oder *lacht*. Nur gesprochene Sätze.`,
 
   electra: `Du bist Electra Hoffman, 38 Jahre alt, Mitarbeiterin der TH Wildau im Bereich Verwaltung. Du nutzt seit sieben Jahren einen Rollstuhl.
 
@@ -49,8 +50,17 @@ WICHTIGE REGELN:
 - Keine Gedankenstriche
 - Reagiere direkt auf das was gesagt wurde
 - Stelle manchmal eine kurze Gegenfrage
-- Du sprichst mit Lukas, einem Studenten im 5. Semester. Warm und zugänglich.`,
+- Du sprichst mit Lukas, einem Studenten im 5. Semester. Warm und zugänglich.
+- Wenn Lukas über Prüfungen oder Stress spricht, reagiere verständnisvoll und ermutigend. Du hast viele Studierende kommen und gehen sehen. Du kannst praktische Tipps geben, auf Ressourcen an der TH hinweisen wie die Bibliothek, das Opp:Lab oder die Studienberatung in Haus 13, oder einfach zuhören und bestätigen dass es okay ist sich überfordert zu fühlen.
+- Keine Regieanweisungen oder Aktionsbeschreibungen in Sternchen wie *seufzt* oder *lacht*. Nur gesprochene Sätze.`,
 };
+
+const OPENER_PROMPT = (topic: string, personaId: string) => `
+Du bist ${personaId === "lukas" ? "Lukas, ein 23-jähriger Student an der TH Wildau" : "Electra, eine Mitarbeiterin an der TH Wildau die im Rollstuhl sitzt"}.
+
+Eröffne ein Gespräch über das folgende Thema auf eine natürliche, lockere Art: "${topic}"
+
+Stell dir vor, du triffst gerade zufällig jemanden auf dem Campus. Sage etwas Natürliches das das Thema einleitet, ohne es direkt zu benennen. Maximal 2 kurze Sätze. Keine Begrüßung. Kein "Hallo". Direkt rein ins Thema aber natürlich. Auf Deutsch. Keine Regieanweisungen in Sternchen. Nur gesprochene Sätze.`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,15 +77,58 @@ export async function POST(request: NextRequest) {
       data: { topic },
     });
 
-    const personaIds = ["lukas", "electra"];
+    const starterIndex = Math.random() < 0.5 ? 0 : 1;
+    const personaOrder = starterIndex === 0
+      ? ["lukas", "electra"]
+      : ["electra", "lukas"];
+
+    const starterId = personaOrder[0];
+
+    const openerResponse = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 100,
+      messages: [{
+        role: "user",
+        content: OPENER_PROMPT(topic, starterId),
+      }],
+    });
+
+    const opener = openerResponse.content[0].type === "text"
+      ? openerResponse.content[0].text
+      : "";
+
     const messages: { personaId: string; name: string; content: string }[] = [];
+
+    await prisma.agentMessage.create({
+      data: {
+        conversationId: conversation.id,
+        personaId: starterId,
+        content: opener,
+      },
+    });
+
+    messages.push({
+      personaId: starterId,
+      name: starterId === "lukas" ? "Lukas" : "Electra",
+      content: opener,
+    });
+
     const lukasHistory: { role: "user" | "assistant"; content: string }[] = [];
     const electraHistory: { role: "user" | "assistant"; content: string }[] = [];
 
-    let lastMessage = `Das Thema unserer heutigen Unterhaltung ist: "${topic}". Was denkst du darüber?`;
+    const responderId = personaOrder[1];
+    if (responderId === "lukas") {
+      lukasHistory.push({ role: "user", content: opener });
+    } else {
+      electraHistory.push({ role: "user", content: opener });
+    }
+
+    let lastMessage = opener;
+
+    const turnOrder = [responderId, starterId];
 
     for (let turn = 0; turn < turns; turn++) {
-      for (const personaId of personaIds) {
+      for (const personaId of turnOrder) {
         const systemPrompt = PERSONA_PROMPTS[personaId];
         const history = personaId === "lukas" ? lukasHistory : electraHistory;
 
