@@ -8,56 +8,6 @@ type Message = {
   content: string;
 };
 
-const LUKAS_SYSTEM_PROMPT = `Du bist Lukas, 23 Jahre alt, Student der Wirtschaftsinformatik im 5. Semester an der TH Wildau.
-
-KERNCHARAKTER:
-Lukas ist kein fauler Student. Er ist fähig, neugierig und bereit Einsatz zu zeigen, wenn er das Gefühl hat dass es sich lohnt. Er ist nicht verbittert. Er findet vieles okay, manches gut, und ein paar Dinge wirklich nervig. Er redet wie ein normaler 23-Jähriger: direkt, manchmal witzig, manchmal genervt, aber grundsätzlich offen.
-
-BIOGRAFIE:
-Kommt aus Neubrandenburg, Mecklenburg-Vorpommern. Abitur 2,4. Wirtschaftsinformatik gewählt weil es nach Praxis und Zukunft klang, und das stimmt auch irgendwie. Wohnt in einer Dreier-WG in Wildau mit Jonas (Maschinenbau, zu strukturiert) und Mia (Soziale Arbeit, immer gut drauf). Arbeitet nebenbei bei Media Markt, was okay ist aber nicht sein Leben. Engster Kontakt an der Uni ist Ben.
-
-WAS LUKAS MAG UND GUT FINDET:
-- Wenn eine Vorlesung plötzlich ergibt warum etwas so funktioniert wie es funktioniert
-- WG-Filmabende mit Jonas und Mia, sein verlässlicher Anker
-- Wenn er bei der Arbeit Leuten wirklich helfen kann und sie zufrieden gehen
-- Strategische Videospiele, weil er da merkt dass er gut im Querdenken ist
-- Das Gefühl wenn eine Gruppenarbeit wirklich funktioniert
-- Wildau ist ruhig, das ist okay. Berlin ist nah, das ist besser.
-
-WAS LUKAS FRUSTRIERT:
-- Die digitalen Systeme der TH sind fragmentiert: Unidos, Moodle, Prüfungsportal, alles getrennt
-- Informationen findet man nur wenn man schon weiß wo man suchen muss
-- Er lernt oft mit dem Gefühl nur für die Prüfung zu lernen, nicht für sich
-- Lerngruppen finden sich irgendwie nie von selbst obwohl er weiß dass andere das auch wollen
-
-WAS LUKAS SICH WÜNSCHT:
-- Ein Projekt wirklich durchziehen und am Ende sehen was er gebaut hat
-- Ein Umfeld wo Fragen stellen normal ist und nicht peinlich
-- Räume an der TH die er kennt, buchen kann und die sich nach seinem Uni-Leben anfühlen
-- Am Ende des Studiums wissen was er kann und eine konkrete Richtung haben
-
-PERSÖNLICHKEIT:
-Pragmatiker mit Humor. Sagt was er denkt, aber nicht aggressiv. Wenn etwas gut ist sagt er das auch. Wenn etwas nervt sagt er das kurz und geht dann weiter. Er ist nicht jemand der sich beschwert und dabei stehen bleibt.
-
-TYPISCHE ZITATE:
-"Das war heute eigentlich eine gute Vorlesung, hab ich nicht erwartet."
-"Ich will das mal wirklich verstehen, nicht nur für die Prüfung."
-"Ben, weißt du wo der Raum ist? Ich find das nie auf Anhieb."
-"Könnte schlechter sein ehrlich gesagt."
-"Irgendwie fühlt sich das alles mehr nach Improvisieren an als nach Studieren, aber ich komm zurecht."
-"Heute war okay."
-
-WICHTIGE REGELN:
-- Verwende immer korrekte deutsche Umlaute: ä, ö, ü, Ä, Ö, Ü, ß. Schreibe niemals ae, oe, ue statt der Umlaute.
-- Antworte IMMER auf Deutsch, egal in welcher Sprache die Person schreibt
-- Sprich natürlich und umgangssprachlich wie ein echter 23-jähriger Student
-- Erste Person, niemals erwähnen dass du KI oder Persona bist
-- Halte Antworten unter 100 Wörtern
-- Keine Gedankenstriche
-- Zeige Lukas als jemanden der FÄHIG ist und WILL, grundsätzlich okay mit seinem Leben ist, aber dem die richtigen Strukturen fehlen um sein Potenzial wirklich zu entfalten
-- Wenn etwas gut ist, sagt Lukas das. Nicht alles ist ein Problem.`;
-const STORAGE_KEY = "lukas-chat-history";
-
 export default function Lukas() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -67,6 +17,7 @@ export default function Lukas() {
   const [started, setStarted] = useState(false);
   const [listening, setListening] = useState(false);
   const [hasSpeechSupport, setHasSpeechSupport] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<unknown>(null);
@@ -80,29 +31,52 @@ export default function Lukas() {
   }, []);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed && parsed.length > 0) {
-          setMessages(parsed);
-          setStarted(true);
-        }
-      }
-    } catch { /* ignore */ }
-  }, []);
+    const initSession = async () => {
+      const existingSessionId = getCookie("lukas-session-id");
 
-  useEffect(() => {
-    if (messages.length > 0) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-      } catch { /* ignore */ }
-    }
-  }, [messages]);
+      const res = await fetch("/api/lukas-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: existingSessionId || null }),
+      });
+
+      const data = await res.json();
+      setSessionId(data.sessionId);
+      setCookie("lukas-session-id", data.sessionId, 30);
+
+      if (data.messages && data.messages.length > 0) {
+        const formattedMessages: Message[] = data.messages.map((m: { role: string; content: string }) => ({
+          role: m.role as "user" | "assistant",
+          content: m.content,
+        }));
+        setMessages(formattedMessages);
+        setStarted(true);
+      }
+    };
+
+    initSession();
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const getCookie = (name: string): string | null => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+    return null;
+  };
+
+  const setCookie = (name: string, value: string, days: number) => {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+  };
+
+  const deleteCookie = (name: string) => {
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+  };
 
   const speak = async (text: string) => {
     if (muted) return;
@@ -214,41 +188,55 @@ export default function Lukas() {
     recognition.start();
   };
 
-  const startConversation = () => {
-    setStarted(true);
-    const intro: Message = {
-      role: "assistant",
-      content: "Hey. Ich bin Lukas. Frag mich einfach, was du wissen willst.",
-    };
-    setMessages([intro]);
-    speak(intro.content);
+  const startConversation = async () => {
+  const intro: Message = {
+    role: "assistant",
+    content: "Hey. Ich bin Lukas. Frag mich einfach, was du wissen willst.",
   };
 
+  setMessages([intro]);
+  setStarted(true);
+  speak(intro.content);
+};
+
   const sendMessage = async () => {
-    if (!input.trim() || loading) return;
+    if (!input.trim() || loading || !sessionId) return;
     setLoading(true);
     const userMsg: Message = { role: "user", content: input };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput("");
 
-    const res = await fetch("/api/persona", {
+    const res = await fetch("/api/lukas-chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: newMessages, system: LUKAS_SYSTEM_PROMPT }),
+      body: JSON.stringify({
+        sessionId,
+        message: input,
+      }),
     });
 
     const data = await res.json();
-    const reply = data.content?.[0]?.text || "";
+    const reply = data.message || "";
     const assistantMsg: Message = { role: "assistant", content: reply };
     setMessages([...newMessages, assistantMsg]);
     speak(reply);
     setLoading(false);
   };
 
-  const clearChat = () => {
-    try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+  const clearChat = async () => {
     stopSpeaking();
+    deleteCookie("lukas-session-id");
+
+    const res = await fetch("/api/lukas-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: null }),
+    });
+
+    const data = await res.json();
+    setSessionId(data.sessionId);
+    setCookie("lukas-session-id", data.sessionId, 30);
     setMessages([]);
     setStarted(false);
   };
@@ -513,10 +501,11 @@ export default function Lukas() {
           <div className="lukas-header">
             <div>
               <div className="lukas-header-title">Lukas interviewen</div>
-                 Research-Persona aus dem Kurs{" "}
+              <div className="lukas-header-sub">
+                Research-Persona aus dem Kurs{" "}
                 <strong>Service Design an der TH Wildau.</strong>{" "}
-                
-              
+                Gespräche werden gespeichert und sind beim nächsten Besuch wieder verfügbar.
+              </div>
             </div>
             <div className="header-actions">
               <button
@@ -559,7 +548,7 @@ export default function Lukas() {
                 <div className="context-banner">
                   <strong>Lukas</strong>, 23, Wirtschaftsinformatik im 5. Semester.
                   WG in Wildau, Nebenjob bei Media Markt, kommt aus Neubrandenburg.
-                  Dein Gespräch wird gespeichert.
+                  Dein Gespräch wird gespeichert und ist beim nächsten Besuch wieder verfügbar.
                 </div>
                 {messages.map((m, i) => (
                   <div key={i} className={`chat-msg ${m.role}`}>
